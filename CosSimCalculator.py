@@ -120,3 +120,4 @@ def calc_cos_sim_incl_one_feedback_avgcossim(issue_emb_path, feedback_emb_path):
         #Calculate Cosine Similarity between the calculated Average and the embeddings of another Feedback
 
 calc_cos_sim_incl_one_feedback_avgcossim('data/bert/issues_bert_embeddings.xlsx', 'data/bert/feedback_bert_embeddings.xlsx')
+#Take highest Sim_score of all
