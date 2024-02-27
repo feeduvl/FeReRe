@@ -73,7 +73,7 @@ def calc_cos_sim_incl_one_feedback_avgcossim(issue_emb_path, feedback_emb_path):
     ground_truth = load_ground_truth('data/Ground_Truth.xlsx')
 
     results_df = pd.DataFrame(columns=jira_df[0], index=feedback_df[0])
-
+    chosen_feedback={}
     for issue_index,issue in jira_df.iterrows():
         issue_key=issue[0]
         issue_emb=issue['Embedding']
@@ -89,35 +89,28 @@ def calc_cos_sim_incl_one_feedback_avgcossim(issue_emb_path, feedback_emb_path):
             else:
                 print(f"{feedback_id} not found.")
 
-
-
+        list_true_feedback_ids = list(true_feedback_ids)
+        if(len(list_true_feedback_ids)!=0):
+            chosen_feedback[issue_key]=list_true_feedback_ids[0]
         for feedback_index, feedback_row in feedback_df.iterrows():
             feedback_id = feedback_row[0]
             feedback_embedding = feedback_row['Embedding']
             # Calculate cosine similarity
             if_similarity = cosine_similarity([issue_emb], [feedback_embedding])[0][0]
-            if(len(true_feedback_ids)!=0):
-                ff_similarity = cosine_similarity([true_feedback_embeddings[list(true_feedback_ids)[0]]],[feedback_embedding])[0][0]
-            if issue_key=="KOMOOT-10" and feedback_id==list(true_feedback_ids)[0]:
-                print(if_similarity)
-                print(ff_similarity)
-            #TODO: NaN when comparing feedback that is already assigned (either write NaN or check if Sim >= 1)
-            #TODO: Calc average between sim scores
-            #TODO: Write to Excel
+            ff_similarity = np.NaN
 
-
+            if(len(list_true_feedback_ids)!=0) and list_true_feedback_ids[0] != feedback_id:
+                ff_similarity = cosine_similarity([true_feedback_embeddings[list_true_feedback_ids[0]]],[feedback_embedding])[0][0]
+            #Calculate average similarity score
+            similarity= (if_similarity + ff_similarity) / 2
             # Assign the similarity score to the corresponding cell in the results DataFrame
-            #results_df.at[feedback_id, issue_key] =
+            results_df.at[feedback_id, issue_key] = similarity
 
     # Write the results to a new Excel file
-    #results_df.to_excel('data/bert/bert_similarity_scores.xlsx')
+    results_df.to_excel('data/bert/bert_AvgCosSim_similarity_scores.xlsx')
+    return chosen_feedback
 
 
 
-    #For Issue get embeddings of all related Feedback
-    #Repeat for all related Feedback:
-        #Average Embeddings between Issue and 1 Feedback
-        #Calculate Cosine Similarity between the calculated Average and the embeddings of another Feedback
 
-calc_cos_sim_incl_one_feedback_avgcossim('data/bert/issues_bert_embeddings.xlsx', 'data/bert/feedback_bert_embeddings.xlsx')
-#Take highest Sim_score of all
+

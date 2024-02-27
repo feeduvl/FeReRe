@@ -1,13 +1,14 @@
 import pandas as pd
 import numpy as np
 import os
-from sklearn.metrics import precision_score, recall_score
 
 class PrecisionRecallEvaluator:
-    def __init__(self, ground_truth_path, excel_files_path, output_path):
+    def __init__(self, ground_truth_path, excel_files_path, output_path, chosen_feedback, removeNoRel):
+        self.chosen_feedback = chosen_feedback
         self.ground_truth = self.load_ground_truth(ground_truth_path)
         self.excel_files_path = excel_files_path
         self.output_path = output_path
+        self.removeNoRel = removeNoRel
 
     def load_ground_truth(self, path):
         df = pd.read_excel(path, header=None)
@@ -16,6 +17,9 @@ class PrecisionRecallEvaluator:
             issue_id = df.iloc[0, column]
             feedback_ids = set(df.iloc[1:, column].dropna().astype(str))
             ground_truth[str(issue_id)] = feedback_ids  # Ensure issue IDs are strings for consistent comparison
+        if self.chosen_feedback != None:
+            for issue_key in self.chosen_feedback:
+                ground_truth[issue_key].remove(self.chosen_feedback[issue_key])
         return ground_truth
 
     def evaluate_files(self):
@@ -57,6 +61,13 @@ class PrecisionRecallEvaluator:
         for issue_id in df.columns:
             true_feedback_ids = self.ground_truth.get(issue_id, set())
             predicted_feedback_ids = set(df[df[issue_id].notna()].index.astype(str))
+            if self.removeNoRel == True and len(true_feedback_ids)<1:
+                precision_list.append(np.NaN)
+                recall_list.append(np.NaN)
+                f1_list.append(np.NaN)
+                continue
+            if self.chosen_feedback != None and issue_id in self.chosen_feedback:
+                predicted_feedback_ids.discard(self.chosen_feedback[issue_id])
             total_predicted_assignments += len(predicted_feedback_ids)
 
             true_positives = len(predicted_feedback_ids & true_feedback_ids)
@@ -84,6 +95,6 @@ class PrecisionRecallEvaluator:
 
         return results_df, avg_predicted_assignments
 
-def evaluate(gold_standard, threshold_files,output_path):
-    calculator = PrecisionRecallEvaluator(gold_standard, threshold_files,output_path)
+def evaluate(gold_standard, threshold_files,output_path, chosen_feedback=None, removeNoRel=False):
+    calculator = PrecisionRecallEvaluator(gold_standard, threshold_files,output_path, chosen_feedback, removeNoRel)
     calculator.evaluate_files()
