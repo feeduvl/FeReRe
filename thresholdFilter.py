@@ -10,6 +10,7 @@ def filter_df_by_threshold(df, threshold):
     return filtered_df
 
 def treshold_filter(cos_sim_file,output_file_path):
+    print("Creating Threshold-Filtered files")
     # Load the initial Excel file containing the similarity scores
     initial_file = cos_sim_file  # Adjust the file name as necessary
     results_df = pd.read_excel(initial_file, index_col=0)  # Assuming the first column contains the index

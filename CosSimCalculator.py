@@ -22,7 +22,7 @@ def process_last_embedding(row):
     return np.array(embedding_floats)
 
 def calc_cos_sim(issue_emb_path, feedback_emb_path):
-
+    print("Calculating Cosine Similarity")
     # Load the Excel files without headers, specifying all columns
     jira_df = pd.read_excel(issue_emb_path, header=None)
     feedback_df = pd.read_excel(feedback_emb_path, header=None)
@@ -63,6 +63,7 @@ def load_ground_truth(path):
     return ground_truth
 
 def calc_cos_sim_incl_one_feedback_avgcossim(issue_emb_path, feedback_emb_path):
+    print("Calculating Cosine Similarity")
     # Load the Excel files without headers, specifying all columns
     jira_df = pd.read_excel(issue_emb_path, header=None)
     feedback_df = pd.read_excel(feedback_emb_path, header=None)

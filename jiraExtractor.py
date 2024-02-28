@@ -3,6 +3,7 @@ import pandas as pd
 import re
 
 def extractIssuesFromJira(path, filterPrefix=False, filterSoftwareNames=None):
+    print("Extracting Jira Issues")
     # Jira server setup
     jira_url = "https://jira-se.ifi.uni-heidelberg.de"
     username = input("Username: ")

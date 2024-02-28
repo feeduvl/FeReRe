@@ -96,5 +96,6 @@ class PrecisionRecallEvaluator:
         return results_df, avg_predicted_assignments
 
 def evaluate(gold_standard, threshold_files,output_path, chosen_feedback=None, removeNoRel=False):
+    print("Evaluating")
     calculator = PrecisionRecallEvaluator(gold_standard, threshold_files,output_path, chosen_feedback, removeNoRel)
     calculator.evaluate_files()

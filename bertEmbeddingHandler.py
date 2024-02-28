@@ -48,7 +48,7 @@ def get_filtered_embeddings(text):
     return average_embedding
 
 def process_excel(file_path, output_path):
-
+    print("Getting Embeddings")
     # Load the Excel file
     df = pd.read_excel(file_path, header=None)
 
