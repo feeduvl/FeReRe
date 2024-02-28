@@ -1,6 +1,7 @@
 import pandas as pd
 import numpy as np
 import os
+import glob
 
 class PrecisionRecallEvaluator:
     def __init__(self, ground_truth_path, excel_files_path, output_path, chosen_feedback, removeNoRel):
@@ -95,7 +96,17 @@ class PrecisionRecallEvaluator:
 
         return results_df, avg_predicted_assignments
 
+def clean_threshold_files(threshold_files):
+    print("Cleaning")
+    directory_path = threshold_files
+    files = glob.glob(os.path.join(directory_path, '*'))
+    for file_path in files:
+        if os.path.isfile(file_path):
+            os.remove(file_path)
+    print("All threshold files have been removed from the directory.")
+
 def evaluate(gold_standard, threshold_files,output_path, chosen_feedback=None, removeNoRel=False):
     print("Evaluating")
     calculator = PrecisionRecallEvaluator(gold_standard, threshold_files,output_path, chosen_feedback, removeNoRel)
     calculator.evaluate_files()
+    clean_threshold_files(threshold_files)

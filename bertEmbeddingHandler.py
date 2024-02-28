@@ -4,6 +4,9 @@ from transformers import DistilBertTokenizer, DistilBertModel
 import torch
 import numpy as np
 
+import CosSimCalculator
+
+
 def get_filtered_embeddings(text):
     # Load spaCy model for English
     nlp = spacy.load("en_core_web_sm")
@@ -12,7 +15,7 @@ def get_filtered_embeddings(text):
     tokenizer = DistilBertTokenizer.from_pretrained('distilbert-base-uncased')
     model = DistilBertModel.from_pretrained('distilbert-base-uncased')
     # tokenize text with distilbert
-    tokens = tokenizer(text, return_tensors="pt")
+    tokens = tokenizer(text, return_tensors="pt", max_length=512, truncation=True)
     # Calculate the contextualized token embeddings. that no gradients (backpropagation) is used
     with torch.no_grad():
         # unpack tokens into individual components
@@ -47,26 +50,87 @@ def get_filtered_embeddings(text):
         average_embedding = np.mean(distilbert_embeddings.squeeze().numpy(), axis=0)
     return average_embedding
 
-def process_excel(file_path, output_path):
+
+def create_embeddings(file_path, output_path):
     print("Getting Embeddings")
     # Load the Excel file
     df = pd.read_excel(file_path, header=None)
-
     # Initialize a list to hold filtered embeddings
     embeddings_list = []
-
     # Process each row in the Excel file
     for index, row in df.iterrows():
         text = row[1]  # Assuming the text is in the second column
         filtered_embeddings = get_filtered_embeddings(text)
         embeddings_list.append(filtered_embeddings)
-
     # Create a new DataFrame with the original first column and filtered embeddings
     output_df = pd.DataFrame({
         'ID': df.iloc[:, 0],
         'Embeddings': embeddings_list
     })
-
     # Save the new DataFrame to an Excel file
     output_df.to_excel(output_path, index=False, header=False)
 
+
+def create_combined_embeddings(issue_path, feedback_path, output_path, ground_truth_path):
+    print("Getting Embeddings")
+    # Load the Excel file
+    issue_df = pd.read_excel(issue_path, header=None)
+    feedback_df = pd.read_excel(feedback_path, header=None)
+
+    ground_truth = CosSimCalculator.load_ground_truth(ground_truth_path)
+    # Initialize a list to hold filtered embeddings
+    embeddings_list = []
+    # Process each row in the Excel file
+    chosen_feedback = {}
+    for index, issue in issue_df.iterrows():
+        true_feedback_ids = ground_truth.get(issue[0], [])
+        list_true_feedback_ids = list(true_feedback_ids)
+        text = issue[1]
+        if not text.endswith("."):
+            text += "."
+        if (len(list_true_feedback_ids) != 0):
+            chosen_feedback[issue[0]] = list_true_feedback_ids[0]
+            text += feedback_df[feedback_df.iloc[:, 0] == list_true_feedback_ids[0]].iloc[0, 1]
+        filtered_embeddings = get_filtered_embeddings(text)
+        embeddings_list.append(filtered_embeddings)
+    # Create a new DataFrame with the original first column and filtered embeddings
+    output_df = pd.DataFrame({
+        'ID': issue_df.iloc[:, 0],
+        'Embeddings': embeddings_list
+    })
+    # Save the new DataFrame to an Excel file
+    output_df.to_excel(output_path, index=False, header=False)
+    return chosen_feedback
+
+def create_average_embeddings(issue_path, feedback_path, output_path, ground_truth_path):
+    print("Getting Embeddings")
+    # Load the Excel file
+    issue_df = pd.read_excel(issue_path, header=None)
+    feedback_df = pd.read_excel(feedback_path, header=None)
+
+    ground_truth = CosSimCalculator.load_ground_truth(ground_truth_path)
+    # Initialize a list to hold filtered embeddings
+    embeddings_list = []
+    # Process each row in the Excel file
+    chosen_feedback = {}
+    for index, issue in issue_df.iterrows():
+        true_feedback_ids = ground_truth.get(issue[0], [])
+        list_true_feedback_ids = list(true_feedback_ids)
+        issue_text = issue[1]
+        filtered_issue_embeddings = get_filtered_embeddings(issue_text)
+        if (len(list_true_feedback_ids) != 0):
+            feedback_text = feedback_df[feedback_df.iloc[:, 0] == list_true_feedback_ids[0]].iloc[0, 1]
+            chosen_feedback[issue[0]] = list_true_feedback_ids[0]
+            filtered_feedback_embeddings = get_filtered_embeddings(feedback_text)
+            filtered_embeddings=(filtered_issue_embeddings+filtered_feedback_embeddings)/2
+            embeddings_list.append(filtered_embeddings)
+        else:
+            embeddings_list.append(filtered_issue_embeddings)
+    # Create a new DataFrame with the original first column and filtered embeddings
+    output_df = pd.DataFrame({
+        'ID': issue_df.iloc[:, 0],
+        'Embeddings': embeddings_list
+    })
+    # Save the new DataFrame to an Excel file
+    output_df.to_excel(output_path, index=False, header=False)
+    return chosen_feedback
