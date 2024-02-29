@@ -3,9 +3,8 @@ import spacy
 from transformers import DistilBertTokenizer, DistilBertModel
 import torch
 import numpy as np
-
 import CosSimCalculator
-
+from sklearn.feature_extraction.text import TfidfVectorizer
 
 def get_filtered_embeddings(text):
     # Load spaCy model for English
@@ -134,3 +133,66 @@ def create_average_embeddings(issue_path, feedback_path, output_path, ground_tru
     # Save the new DataFrame to an Excel file
     output_df.to_excel(output_path, index=False, header=False)
     return chosen_feedback
+
+def create_TFIDFweightedaverage_embeddings(issue_path, feedback_path, output_path, ground_truth_path):
+    print("Getting Embeddings")
+    # Load the Excel files
+    issue_df = pd.read_excel(issue_path, header=None)
+    feedback_df = pd.read_excel(feedback_path, header=None)
+
+    ground_truth = CosSimCalculator.load_ground_truth(ground_truth_path)
+
+    # Combine all texts to compute global TF-IDF
+    all_texts = pd.concat([issue_df[1], feedback_df[1]]).values
+    vectorizer = TfidfVectorizer()
+    vectorizer.fit(all_texts)
+
+    # Initialize a list to hold filtered embeddings
+    embeddings_list = []
+    # Process each row in the Excel file
+    chosen_feedback = {}
+    for index, issue in issue_df.iterrows():
+        print(issue[0])
+        true_feedback_ids = ground_truth.get(issue[0], [])
+        list_true_feedback_ids = list(true_feedback_ids)
+        issue_text = issue[1]
+        filtered_issue_embeddings = get_TFIDF_weighted_embedding(issue_text, vectorizer)
+
+        if len(list_true_feedback_ids) != 0:
+            feedback_text = feedback_df[feedback_df.iloc[:, 0] == list_true_feedback_ids[0]].iloc[0, 1]
+            chosen_feedback[issue[0]] = list_true_feedback_ids[0]
+            filtered_feedback_embeddings = get_TFIDF_weighted_embedding(feedback_text, vectorizer)
+
+            # Combine issue and feedback embeddings
+            filtered_embeddings = (filtered_issue_embeddings + filtered_feedback_embeddings) / 2
+            embeddings_list.append(filtered_embeddings)
+        else:
+            embeddings_list.append(filtered_issue_embeddings)
+
+    # Create a new DataFrame with the original first column and filtered embeddings
+    output_df = pd.DataFrame({
+        'ID': issue_df.iloc[:, 0],
+        'Embeddings': embeddings_list
+    })
+    # Save the new DataFrame to an Excel file
+    output_df.to_excel(output_path, index=False, header=False)
+    return chosen_feedback
+
+def get_TFIDF_weighted_embedding(text, vectorizer):
+    # Transform the text to get TF-IDF scores
+    tfidf_vector = vectorizer.transform([text]).toarray()
+    # Retrieve the words present in the text
+    feature_array = np.array(vectorizer.get_feature_names_out())
+    words = feature_array[tfidf_vector.nonzero()[1]]
+
+    # Initialize an empty embedding vector
+    weighted_embedding = np.zeros(768)  # EMBEDDING_DIM should be set to your embedding dimensionality
+    for word in words:
+        # Assuming get_filtered_embeddings returns an embedding for a given word
+        word_embedding = get_filtered_embeddings(word)
+        # Retrieve the TF-IDF score for the word
+        tfidf_score = tfidf_vector[0, vectorizer.vocabulary_.get(word)]
+        # Weight the word's embedding by its TF-IDF score
+        weighted_embedding += word_embedding * tfidf_score
+
+    return weighted_embedding

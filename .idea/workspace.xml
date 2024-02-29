@@ -4,13 +4,18 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="54d8f256-c951-460c-afc0-46bbbd00768e" name="Changes" comment="Cleaned up main code">
+    <list default="true" id="54d8f256-c951-460c-afc0-46bbbd00768e" name="Changes" comment="Add jira issues file">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/CosSimCalculator.py" beforeDir="false" afterPath="$PROJECT_DIR$/CosSimCalculator.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Evaluator.py" beforeDir="false" afterPath="$PROJECT_DIR$/Evaluator.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/bertEmbeddingHandler.py" beforeDir="false" afterPath="$PROJECT_DIR$/bertEmbeddingHandler.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/bertMain.py" beforeDir="false" afterPath="$PROJECT_DIR$/bertMain.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/data/bert/Eval_Bert_AverageEmbeddings.xlsx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/data/bert/Eval_Bert_AverageEmbeddingsFewer1Assign.xlsx" beforeDir="false" afterPath="$PROJECT_DIR$/data/bert/Eval_Bert_AverageEmbeddingsFewer1Assign.xlsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/data/bert/Eval_Bert_CombinedEmbeddings.xlsx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/data/bert/Eval_Bert_CombinedEmbeddingsFewer1Assign.xlsx" beforeDir="false" afterPath="$PROJECT_DIR$/data/bert/Eval_Bert_CombinedEmbeddingsFewer1Assign.xlsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/data/bert/Eval_Bert_HighestSimScore.xlsx" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/data/feedback-namesremoved.xlsx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/data/jira_issues_namesfiltered_noprefix.xlsx" beforeDir="false" afterPath="$PROJECT_DIR$/data/jira_issues_namesfiltered_noprefix.xlsx" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -42,25 +47,25 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "Python.bertMain.executor": "Run",
-    "RunOnceActivity.OpenDjangoStructureViewOnStart": "true",
-    "RunOnceActivity.OpenProjectViewOnStart": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "kotlin-language-version-configured": "true",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "project.structure.last.edited": "Project",
-    "project.structure.proportion": "0.15",
-    "project.structure.side.proportion": "0.2",
-    "settings.editor.selected.configurable": "preferences.sourceCode.Python",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;Python.bertMain.executor&quot;: &quot;Run&quot;,
+    &quot;RunOnceActivity.OpenDjangoStructureViewOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;project.structure.last.edited&quot;: &quot;Project&quot;,
+    &quot;project.structure.proportion&quot;: &quot;0.15&quot;,
+    &quot;project.structure.side.proportion&quot;: &quot;0.2&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.sourceCode.Python&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
-}]]></component>
+}</component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
@@ -71,7 +76,8 @@
       <updated>1708699937611</updated>
       <workItem from="1708699938651" duration="645000" />
       <workItem from="1708950496515" duration="777000" />
-      <workItem from="1709121430571" duration="10763000" />
+      <workItem from="1709121430571" duration="10995000" />
+      <workItem from="1709209670101" duration="7065000" />
     </task>
     <task id="LOCAL-00001" summary="Add codebase">
       <option name="closed" value="true" />
@@ -89,7 +95,23 @@
       <option name="project" value="LOCAL" />
       <updated>1709123588796</updated>
     </task>
-    <option name="localTasksCounter" value="3" />
+    <task id="LOCAL-00003" summary="Added 4 new Experiments. See bertMain diff for details">
+      <option name="closed" value="true" />
+      <created>1709133887719</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1709133887719</updated>
+    </task>
+    <task id="LOCAL-00004" summary="Add jira issues file">
+      <option name="closed" value="true" />
+      <created>1709133980476</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1709133980476</updated>
+    </task>
+    <option name="localTasksCounter" value="5" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -122,20 +144,11 @@
     <MESSAGE value="Initial Commit" />
     <MESSAGE value="Add codebase" />
     <MESSAGE value="Cleaned up main code" />
-    <option name="LAST_COMMIT_MESSAGE" value="Cleaned up main code" />
-  </component>
-  <component name="XDebuggerManager">
-    <breakpoint-manager>
-      <breakpoints>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/CosSimCalculator.py</url>
-          <line>64</line>
-          <option name="timeStamp" value="1" />
-        </line-breakpoint>
-      </breakpoints>
-    </breakpoint-manager>
+    <MESSAGE value="Added 4 new Experiments. See bertMain diff for details" />
+    <MESSAGE value="Add jira issues file" />
+    <option name="LAST_COMMIT_MESSAGE" value="Add jira issues file" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
-    <SUITE FILE_PATH="coverage/FeReRe$bertMain.coverage" NAME="bertMain Coverage Results" MODIFIED="1709132567145" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/FeReRe$bertMain.coverage" NAME="bertMain Coverage Results" MODIFIED="1709219232347" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
   </component>
 </project>

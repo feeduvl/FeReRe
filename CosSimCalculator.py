@@ -110,7 +110,7 @@ def calc_cos_sim_incl_one_feedback_highestscore(issue_emb_path, feedback_emb_pat
             results_df.at[feedback_id, issue_key] = similarity
 
     # Write the results to a new Excel file
-    results_df.to_excel('data/bert/bert_AvgCosSim_similarity_scores.xlsx')
+    results_df.to_excel('data/bert/bert_similarity_scores.xlsx')
     return chosen_feedback
 
 def calc_cos_sim_incl_one_feedback_avgcossim(issue_emb_path, feedback_emb_path):
@@ -159,7 +159,7 @@ def calc_cos_sim_incl_one_feedback_avgcossim(issue_emb_path, feedback_emb_path):
             results_df.at[feedback_id, issue_key] = similarity
 
     # Write the results to a new Excel file
-    results_df.to_excel('data/bert/bert_AvgCosSim_similarity_scores.xlsx')
+    results_df.to_excel('data/bert/bert_similarity_scores.xlsx')
     return chosen_feedback
 
 
