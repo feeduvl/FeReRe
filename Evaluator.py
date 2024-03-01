@@ -105,8 +105,9 @@ def clean_threshold_files(threshold_files):
             os.remove(file_path)
     print("All threshold files have been removed from the directory.")
 
-def evaluate(gold_standard, threshold_files,output_path, chosen_feedback=None, removeNoRel=False):
+def evaluate(gold_standard, threshold_files,output_path, chosen_feedback=None, removeNoRel=False, cleanup=True):
     print("Evaluating")
     calculator = PrecisionRecallEvaluator(gold_standard, threshold_files,output_path, chosen_feedback, removeNoRel)
     calculator.evaluate_files()
-    clean_threshold_files(threshold_files)
+    if cleanup:
+        clean_threshold_files(threshold_files)
