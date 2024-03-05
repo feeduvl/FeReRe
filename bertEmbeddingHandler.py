@@ -1,5 +1,6 @@
 import pandas as pd
 import spacy
+from sklearn.decomposition import PCA
 from transformers import DistilBertTokenizer, DistilBertModel
 import torch
 import numpy as np
@@ -141,7 +142,7 @@ def create_combined_embeddings(issue_path, feedback_path, output_path, ground_tr
     output_df.to_excel(output_path, index=False, header=False)
     return chosen_feedback
 
-def create_average_embeddings(issue_path, feedback_path, output_path, ground_truth_path):
+def create_average_embeddings(issue_path, feedback_path, output_path, ground_truth_path, howmuchalreadyassigned=1):
     print("Getting Embeddings")
     # Load the Excel file
     issue_df = pd.read_excel(issue_path, header=None)
@@ -158,11 +159,16 @@ def create_average_embeddings(issue_path, feedback_path, output_path, ground_tru
         issue_text = issue[1]
         filtered_issue_embeddings = get_filtered_embeddings(issue_text)
         if (len(list_true_feedback_ids) != 0):
-            feedback_text = feedback_df[feedback_df.iloc[:, 0] == list_true_feedback_ids[0]].iloc[0, 1]
-            chosen_feedback[issue[0]] = list_true_feedback_ids[0]
-            filtered_feedback_embeddings = get_filtered_embeddings(feedback_text)
-            filtered_embeddings=(filtered_issue_embeddings+filtered_feedback_embeddings)/2
-            embeddings_list.append(filtered_embeddings)
+            selected_feedback_list = []
+            filtered_feedback_embeddings= []
+            for x in range(howmuchalreadyassigned):
+                if(len(list_true_feedback_ids) > x):
+                    feedback_text = feedback_df[feedback_df.iloc[:, 0] == list_true_feedback_ids[x]].iloc[0, 1]
+                    selected_feedback_list.append(list_true_feedback_ids[x])
+                    filtered_feedback_embeddings.append(get_filtered_embeddings(feedback_text))
+            chosen_feedback[issue[0]] = selected_feedback_list
+            filtered_embeddings = [filtered_issue_embeddings + fb for fb in filtered_feedback_embeddings]
+            embeddings_list.append(np.mean(filtered_embeddings, axis=0))
         else:
             embeddings_list.append(filtered_issue_embeddings)
     # Create a new DataFrame with the original first column and filtered embeddings
@@ -173,6 +179,7 @@ def create_average_embeddings(issue_path, feedback_path, output_path, ground_tru
     # Save the new DataFrame to an Excel file
     output_df.to_excel(output_path, index=False, header=False)
     return chosen_feedback
+
 
 def create_TFIDFweightedaverage_embeddings(issue_path, feedback_path, output_path, ground_truth_path):
     print("Getting Embeddings")
@@ -242,3 +249,52 @@ def create_TFIDF_embeddings(embeddingsyouwant, othertext, output_path):
     })
     # Save the new DataFrame to an Excel file
     output_df.to_excel(output_path, index=False, header=False)
+
+def create_concatenated_embeddings(issue_path, feedback_path, output_path, ground_truth_path, howmuchalreadyassigned=1, target_dim=768):
+    print("Getting Embeddings")
+    # Load the Excel file
+    issue_df = pd.read_excel(issue_path, header=None)
+    feedback_df = pd.read_excel(feedback_path, header=None)
+
+    ground_truth = CosSimCalculator.load_ground_truth(ground_truth_path)
+    # Initialize a list to hold filtered embeddings
+    embeddings_list = []
+    # Process each row in the Excel file
+    chosen_feedback = {}
+    for index, issue in issue_df.iterrows():
+        true_feedback_ids = ground_truth.get(issue[0], [])
+        list_true_feedback_ids = list(true_feedback_ids)
+        issue_text = issue[1]
+        filtered_issue_embeddings = get_filtered_embeddings(issue_text)
+        if (len(list_true_feedback_ids) != 0):
+            selected_feedback_list = []
+            filtered_feedback_embeddings= [filtered_issue_embeddings]
+            for x in range(howmuchalreadyassigned):
+                if(len(list_true_feedback_ids) > x):
+                    feedback_text = feedback_df[feedback_df.iloc[:, 0] == list_true_feedback_ids[x]].iloc[0, 1]
+                    selected_feedback_list.append(list_true_feedback_ids[x])
+                    filtered_feedback_embeddings.append(get_filtered_embeddings(feedback_text))
+            chosen_feedback[issue[0]] = selected_feedback_list
+            concatenated_embedding = np.concatenate(filtered_feedback_embeddings, axis=0)
+            if len(concatenated_embedding) % target_dim != 0:
+                print(concatenated_embedding.shape[0])
+                raise ValueError("The length of the embedding must be a multiple of 768.")
+
+            # Calculate the number of segments the embedding will be split into
+            num_segments = len(concatenated_embedding) // target_dim
+
+            # Reshape the embedding into a 2D array
+            reshaped_embedding = concatenated_embedding.reshape(-1, target_dim)
+            # Take the mean across the segments to reduce the embedding
+            reduced_embedding = reshaped_embedding.mean(axis=0)
+            embeddings_list.append(reduced_embedding)
+        else:
+            embeddings_list.append(filtered_issue_embeddings)
+    # Create a new DataFrame with the original first column and filtered embeddings
+    output_df = pd.DataFrame({
+        'ID': issue_df.iloc[:, 0],
+        'Embeddings': embeddings_list
+    })
+    # Save the new DataFrame to an Excel file
+    output_df.to_excel(output_path, index=False, header=False)
+    return chosen_feedback

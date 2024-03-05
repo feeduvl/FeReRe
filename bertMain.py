@@ -1,6 +1,6 @@
-from jiraExtractor import extractIssuesFromJira
+from jiraExtractor import extractIssuesFromJira, extractIssuesFromJiraWithLinks
 from bertEmbeddingHandler import create_embeddings, create_combined_embeddings, create_average_embeddings, \
-    create_TFIDFweightedaverage_embeddings, create_TFIDF_embeddings
+    create_TFIDFweightedaverage_embeddings, create_TFIDF_embeddings, create_concatenated_embeddings
 import CosSimCalculator
 from thresholdFilter import treshold_filter
 from Evaluator import evaluate
@@ -114,7 +114,7 @@ def runEvalBertNoPrefixNoNamesAvgEmbeddingsFewer1Assign():
     # Calculate average of issue and feedback embedding and calculate cos sim for new feedback with average
     # extractIssuesFromJira("data/", True, ["Komoot", "Garmin", "Google Fit", "Strava"])
     chosen_feedback = create_average_embeddings('data/jira_issues_namesfiltered_noprefix.xlsx', 'data/feedback_nonames.xlsx', 'data/bert/issues_bert_combined_embeddings.xlsx', 'data/Ground_Truth.xlsx')
-    # create_embeddings('data/feedback_nonames.xlsx', 'data/bert/feedback_bert_embeddings.xlsx')
+    #create_embeddings('data/feedback_nonames.xlsx', 'data/bert/feedback_bert_embeddings.xlsx')
     CosSimCalculator.calc_cos_sim('data/bert/issues_bert_combined_embeddings.xlsx', 'data/bert/feedback_bert_embeddings.xlsx', chosen_feedback)
     treshold_filter('data/bert/bert_similarity_scores.xlsx', 'data/bert/thresholds')
     evaluate('data/Ground_Truth.xlsx', 'data/bert/thresholds', 'data/bert/Eval_Bert_AverageEmbeddingsFewer1Assign', chosen_feedback, True)
@@ -128,10 +128,28 @@ def runEvalBertNoPrefixNoNamesTFIDFAvgEmbeddingsFewer1Assign():
     treshold_filter('data/bert/bert_similarity_scores.xlsx', 'data/bert/thresholds')
     evaluate('data/Ground_Truth.xlsx', 'data/bert/thresholds', 'data/bert/Eval_Bert_TFIDFAverageEmbeddingsFewer1Assign', chosen_feedback, True)
 
+def runEvalBertNoPrefixNoNamesAvgEmbeddingsMultipleFeedbackFewer1Assign():
+    # Calculate average of issue and feedback embedding and calculate cos sim for new feedback with average
+    # extractIssuesFromJira("data/", True, ["Komoot", "Garmin", "Google Fit", "Strava"])
+    chosen_feedback = create_average_embeddings('data/jira_issues_namesfiltered_noprefix.xlsx', 'data/feedback_nonames.xlsx', 'data/bert/issues_bert_combined_embeddings.xlsx', 'data/Ground_Truth.xlsx', 2)
+    # create_embeddings('data/feedback_nonames.xlsx', 'data/bert/feedback_bert_embeddings.xlsx')
+    CosSimCalculator.calc_cos_sim('data/bert/issues_bert_combined_embeddings.xlsx', 'data/bert/feedback_bert_embeddings.xlsx', chosen_feedback)
+    treshold_filter('data/bert/bert_similarity_scores.xlsx', 'data/bert/thresholds')
+    evaluate('data/Ground_Truth.xlsx', 'data/bert/thresholds', 'data/bert/Eval_Bert_AverageEmbeddingsMultiFeedbackFewer1Assign', chosen_feedback, True)
+
+def runEvalBertNoPrefixNoNamesConcatenatedEmbeddingsFewer1Assign():
+    # Calculate average of issue and feedback embedding and calculate cos sim for new feedback with average
+    # extractIssuesFromJira("data/", True, ["Komoot", "Garmin", "Google Fit", "Strava"])
+    chosen_feedback = create_concatenated_embeddings('data/jira_issues_namesfiltered_noprefix.xlsx', 'data/feedback_nonames.xlsx', 'data/bert/issues_bert_combined_embeddings.xlsx', 'data/Ground_Truth.xlsx')
+    #create_embeddings('data/feedback_nonames.xlsx', 'data/bert/feedback_bert_embeddings.xlsx')
+    CosSimCalculator.calc_cos_sim('data/bert/issues_bert_combined_embeddings.xlsx', 'data/bert/feedback_bert_embeddings.xlsx', chosen_feedback)
+    treshold_filter('data/bert/bert_similarity_scores.xlsx', 'data/bert/thresholds')
+    evaluate('data/Ground_Truth.xlsx', 'data/bert/thresholds', 'data/bert/Eval_Bert_ConcatenatedEmbeddingsFewer1Assign', chosen_feedback, True)
 
 # runEvalBertNoPrefix()
 # runEvalBertNoPrefixNoNames()
 # Results: P 0.29 R 0.43 F1 0.29 Avg: 13 at 0.85
+# Results: P 0.06 R 0.85 F1 0.09 Avg: 164 at 0.42 Only Issue Summary
 # runEvalBertNoPrefixNoNamesFewer1Assign()
 # Results: P 0.30 R 0.45 F1 0.31 Avg: 13 at 0.85
 # runEvalBertNoPrefixNoNamesTFIDFFewer1Assign()
@@ -151,14 +169,17 @@ def runEvalBertNoPrefixNoNamesTFIDFAvgEmbeddingsFewer1Assign():
 # Results: P 0.11 R 0.54 F1 0.15 Avg: 41 at 0.88
 # runEvalBertNoPrefixNoNamesAvgEmbeddings()
 # runEvalBertNoPrefixNoNamesAvgEmbeddingsFewer1Assign()
-# Results: P 0.06 R 0.96 F1 0.11 Avg: 98 at 0.85
-# Results: P 0.17 R 0.63 F1 0.23 Avg: 25 at 0.89
+# Results: P 0.06 R 0.98 F1 0.11 Avg: 99 at 0.85
+# Results: P 0.26 R 0.34 F1 0.25 Avg: 09 at 0.91
 # runEvalBertNoPrefixNoNamesTFIDFAvgEmbeddingsFewer1Assign()
 # Results: P 0.10 R 0.80 F1 0.15 Avg: 60 at 0.85
 # Results: P 0.19 R 0.49 F1 0.23 Avg: 18 at 0.88
+# runEvalBertNoPrefixNoNamesAvgEmbeddingsMultipleFeedbackFewer1Assign()
+# Results: P 0.06 R 0.97 F1 0.10 Avg: 101 at 0.85
+# Results: P 0.26 R 0.48 F1 0.29 Avg: 11 at 0.91
+# runEvalBertNoPrefixNoNamesConcatenatedEmbeddingsFewer1Assign()
+# Results: P 0.06 R 0.99 F1 0.11 Avg: 100 at 0.85
+# Results: P 0.20 R 0.40 F1 0.22 Avg: 15 at 0.90
 
-
-#Todo AvgEmbeddings with more than 1 Feedback
-#Todo TF-IDF Weighted Average
 #Todo Cocatenate Embeddings and Reduce to certain size (e.g through PCA)
 #Todo Tokenize FIRST. Replace all non Verbs and Nouns with placeholders

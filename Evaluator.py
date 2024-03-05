@@ -20,7 +20,8 @@ class PrecisionRecallEvaluator:
             ground_truth[str(issue_id)] = feedback_ids  # Ensure issue IDs are strings for consistent comparison
         if self.chosen_feedback != None:
             for issue_key in self.chosen_feedback:
-                ground_truth[issue_key].remove(self.chosen_feedback[issue_key])
+                for feedback in self.chosen_feedback[issue_key]:
+                    ground_truth[issue_key].remove(feedback)
         return ground_truth
 
     def evaluate_files(self):
@@ -68,7 +69,8 @@ class PrecisionRecallEvaluator:
                 f1_list.append(np.NaN)
                 continue
             if self.chosen_feedback != None and issue_id in self.chosen_feedback:
-                predicted_feedback_ids.discard(self.chosen_feedback[issue_id])
+                for feedback in self.chosen_feedback[issue_id]:
+                    predicted_feedback_ids.discard(feedback)
             total_predicted_assignments += len(predicted_feedback_ids)
 
             true_positives = len(predicted_feedback_ids & true_feedback_ids)
