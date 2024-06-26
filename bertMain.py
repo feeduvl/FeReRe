@@ -86,8 +86,7 @@ def runEvalBertNoPrefixNoNamesCombinedEmbeddingsFewer1Assign():
     evaluate('data/Ground_Truth.xlsx', 'data/bert/thresholds', 'data/bert/Eval_Bert_CombinedEmbeddingsFewer1Assign', chosen_feedback, True)
 
 def runEvalBertNoPrefixNoNamesHighestSimScore():
-
-    # Combine Text of Issue and 1 Feedback and calculate that combined embedding
+    # Treat one feedback as already assigned. Calculate sim score of new feedback and issue and new feedback and already assigned feedback and take the higher sim score of the two
     #extractIssuesFromJira("data/", True, ["Komoot", "Garmin", "Google Fit", "Strava"])
     #create_embeddings('data/jira_issues_namesfiltered_noprefix.xlsx', 'data/bert/issues_bert_embeddings.xlsx')
     #create_embeddings('data/feedback_nonames.xlsx', 'data/bert/feedback_bert_embeddings.xlsx')
@@ -96,8 +95,7 @@ def runEvalBertNoPrefixNoNamesHighestSimScore():
     evaluate('data/Ground_Truth.xlsx', 'data/bert/thresholds', 'data/bert/Eval_Bert_HighestSimScore', chosen_feedback)
 
 def runEvalBertNoPrefixNoNamesHighestSimScoreFewer1Assign():
-
-    # Combine Text of Issue and 1 Feedback and calculate that combined embedding
+    # Treat one feedback as already assigned. Calculate sim score of new feedback and issue and new feedback and already assigned feedback and take the higher sim score of the two
     #extractIssuesFromJira("data/", True, ["Komoot", "Garmin", "Google Fit", "Strava"])
     create_embeddings('data/jira_issues_namesfiltered_noprefix.xlsx', 'data/bert/issues_bert_embeddings.xlsx')
     #create_embeddings('data/feedback_nonames.xlsx', 'data/bert/feedback_bert_embeddings.xlsx')
@@ -124,7 +122,7 @@ def runEvalBertNoPrefixNoNamesAvgEmbeddingsFewer1Assign():
     evaluate('data/Ground_Truth.xlsx', 'data/bert/thresholds', 'data/bert/Eval_Bert_AverageEmbeddingsFewer1Assign', chosen_feedback, True)
 
 def runEvalBertNoPrefixNoNamesTFIDFAvgEmbeddingsFewer1Assign():
-    # Calculate average of issue and feedback embedding and calculate cos sim for new feedback with average
+    # Calculate average of issue and feedback embedding and calculate cos sim for new feedback with average including TFIDF weights
     # extractIssuesFromJira("data/", True, ["Komoot", "Garmin", "Google Fit", "Strava"])
     chosen_feedback = create_TFIDFweightedaverage_embeddings('data/jira_issues_namesfiltered_noprefix.xlsx', 'data/feedback_nonames.xlsx', 'data/bert/issues_bert_combined_embeddings.xlsx', 'data/Ground_Truth.xlsx')
     create_TFIDF_embeddings('data/feedback_nonames.xlsx','data/jira_issues_namesfiltered_noprefix.xlsx', 'data/bert/feedback_bert_embeddings.xlsx')
@@ -133,7 +131,7 @@ def runEvalBertNoPrefixNoNamesTFIDFAvgEmbeddingsFewer1Assign():
     evaluate('data/Ground_Truth.xlsx', 'data/bert/thresholds', 'data/bert/Eval_Bert_TFIDFAverageEmbeddingsFewer1Assign', chosen_feedback, True)
 
 def runEvalBertNoPrefixNoNamesAvgEmbeddingsMultipleFeedbackFewer1Assign():
-    # Calculate average of issue and feedback embedding and calculate cos sim for new feedback with average
+    # Calculate average of issue and multiple feedback embeddings and calculate cos sim for new feedback with average
     # extractIssuesFromJira("data/", True, ["Komoot", "Garmin", "Google Fit", "Strava"])
     chosen_feedback = create_average_embeddings('data/jira_issues_namesfiltered_noprefix.xlsx', 'data/feedback_nonames.xlsx', 'data/bert/issues_bert_combined_embeddings.xlsx', 'data/Ground_Truth.xlsx', 2)
     # create_embeddings('data/feedback_nonames.xlsx', 'data/bert/feedback_bert_embeddings.xlsx')
@@ -142,7 +140,7 @@ def runEvalBertNoPrefixNoNamesAvgEmbeddingsMultipleFeedbackFewer1Assign():
     evaluate('data/Ground_Truth.xlsx', 'data/bert/thresholds', 'data/bert/Eval_Bert_AverageEmbeddingsMultiFeedbackFewer1Assign', chosen_feedback, True)
 
 def runEvalBertNoPrefixNoNamesConcatenatedEmbeddingsFewer1Assign():
-    # Calculate average of issue and feedback embedding and calculate cos sim for new feedback with average
+    # Concatenate Embeddings of issue and already assigned feedback, reduce and calculate cos sim with new feedback
     # extractIssuesFromJira("data/", True, ["Komoot", "Garmin", "Google Fit", "Strava"])
     chosen_feedback = create_concatenated_embeddings('data/jira_issues_namesfiltered_noprefix.xlsx', 'data/feedback_nonames.xlsx', 'data/bert/issues_bert_combined_embeddings.xlsx', 'data/Ground_Truth.xlsx')
     #create_embeddings('data/feedback_nonames.xlsx', 'data/bert/feedback_bert_embeddings.xlsx')
