@@ -7,6 +7,7 @@ from Evaluator import evaluate
 
 
 def runEvalBertNoPrefix():
+    # Jira Issue Prefixes are removed from requirements
     extractIssuesFromJira("data/", True)
     create_embeddings('data/jira_issues_noprefix.xlsx', 'data/bert/issues_bert_embeddings.xlsx')
     create_embeddings('data/feedback.xlsx', 'data/bert/feedback_bert_embeddings.xlsx')
@@ -15,6 +16,7 @@ def runEvalBertNoPrefix():
     evaluate('data/Ground_Truth.xlsx', "data/bert/thresholds", "data/bert/Eval_Bert_NoPrefix")
 
 def runEvalBertNoPrefixNoNames():
+    # Jira Issue Prefixes and Software specific Names such as "Komoot" are removed from requirements
     extractIssuesFromJira("data/", True, ["Komoot", "Garmin", "Google Fit", "Strava"])
     create_embeddings('data/jira_issues_namesfiltered_noprefix.xlsx', 'data/bert/issues_bert_embeddings.xlsx')
     create_embeddings('data/feedback_nonames.xlsx', 'data/bert/feedback_bert_embeddings.xlsx')
@@ -23,6 +25,7 @@ def runEvalBertNoPrefixNoNames():
     evaluate('data/Ground_Truth.xlsx', "data/bert/thresholds", "data/bert/Eval_Bert_NoPrefix_NoNames")
 
 def runEvalBertNoPrefixNoNamesFewer1Assign():
+    # Fewer1Assign means that feedback that is not related to any requirement in the ground truth is discarded before classification
     #extractIssuesFromJira("data/", True, ["Komoot", "Garmin", "Google Fit", "Strava"])
     #create_embeddings('data/jira_issues_namesfiltered_noprefix.xlsx', 'data/bert/issues_bert_embeddings.xlsx')
     #create_embeddings('data/feedback_nonames.xlsx', 'data/bert/feedback_bert_embeddings.xlsx')
@@ -31,6 +34,7 @@ def runEvalBertNoPrefixNoNamesFewer1Assign():
     evaluate('data/Ground_Truth.xlsx', "data/bert/thresholds", "data/bert/Eval_Bert_NoPrefix_NoNames_Fewer1Assign",removeNoRel=True)
 
 def runEvalBertNoPrefixNoNamesTFIDFFewer1Assign():
+    # Word Embeddings are weighted by the TFIDF scores of the individual words in the feedback and requirements
     #extractIssuesFromJira("data/", True, ["Komoot", "Garmin", "Google Fit", "Strava"])
     create_TFIDF_embeddings('data/jira_issues_namesfiltered_noprefix.xlsx','data/feedback_nonames.xlsx', 'data/bert/issues_bert_embeddings.xlsx')
     create_TFIDF_embeddings('data/feedback_nonames.xlsx','data/jira_issues_namesfiltered_noprefix.xlsx', 'data/bert/feedback_bert_embeddings.xlsx')
@@ -180,6 +184,3 @@ def runEvalBertNoPrefixNoNamesConcatenatedEmbeddingsFewer1Assign():
 # runEvalBertNoPrefixNoNamesConcatenatedEmbeddingsFewer1Assign()
 # Results: P 0.06 R 0.99 F1 0.11 Avg: 100 at 0.85
 # Results: P 0.20 R 0.40 F1 0.22 Avg: 15 at 0.90
-
-#Todo Cocatenate Embeddings and Reduce to certain size (e.g through PCA)
-#Todo Tokenize FIRST. Replace all non Verbs and Nouns with placeholders

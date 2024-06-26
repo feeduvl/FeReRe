@@ -4,18 +4,12 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="54d8f256-c951-460c-afc0-46bbbd00768e" name="Changes" comment="Add jira issues file">
+    <list default="true" id="54d8f256-c951-460c-afc0-46bbbd00768e" name="Changes" comment="Added concatenate, only issue summary and avg emb multiple feedback experiments. Also added functionality to get link information from issues in jira">
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CosSimCalculator.py" beforeDir="false" afterPath="$PROJECT_DIR$/CosSimCalculator.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/bertEmbeddingHandler.py" beforeDir="false" afterPath="$PROJECT_DIR$/bertEmbeddingHandler.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/bertMain.py" beforeDir="false" afterPath="$PROJECT_DIR$/bertMain.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/bert/Eval_Bert_AverageEmbeddings.xlsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/bert/Eval_Bert_AverageEmbeddingsFewer1Assign.xlsx" beforeDir="false" afterPath="$PROJECT_DIR$/data/bert/Eval_Bert_AverageEmbeddingsFewer1Assign.xlsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/bert/Eval_Bert_CombinedEmbeddings.xlsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/bert/Eval_Bert_CombinedEmbeddingsFewer1Assign.xlsx" beforeDir="false" afterPath="$PROJECT_DIR$/data/bert/Eval_Bert_CombinedEmbeddingsFewer1Assign.xlsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/bert/Eval_Bert_HighestSimScore.xlsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/feedback-namesremoved.xlsx" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/data/jira_issues_namesfiltered_noprefix.xlsx" beforeDir="false" afterPath="$PROJECT_DIR$/data/jira_issues_namesfiltered_noprefix.xlsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/jiraExtractor.py" beforeDir="false" afterPath="$PROJECT_DIR$/jiraExtractor.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -35,6 +29,7 @@
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+    <option name="RESET_MODE" value="HARD" />
   </component>
   <component name="ProjectCodeStyleSettingsMigration">
     <option name="version" value="2" />
@@ -43,17 +38,22 @@
   &quot;associatedIndex&quot;: 0
 }</component>
   <component name="ProjectId" id="2clxOIMmk3BCRvlxsHIbZC3SzXT" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
   <component name="PropertiesComponent">{
   &quot;keyToString&quot;: {
+    &quot;Python.bertEmbeddingHandler.executor&quot;: &quot;Run&quot;,
     &quot;Python.bertMain.executor&quot;: &quot;Run&quot;,
+    &quot;Python.jiraExtractor.executor&quot;: &quot;Run&quot;,
     &quot;RunOnceActivity.OpenDjangoStructureViewOnStart&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
     &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;E:/BERT/uvl-tore-classifier-bert&quot;,
     &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
     &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
     &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
@@ -78,6 +78,20 @@
       <workItem from="1708950496515" duration="777000" />
       <workItem from="1709121430571" duration="10995000" />
       <workItem from="1709209670101" duration="7065000" />
+      <workItem from="1709301728224" duration="4723000" />
+      <workItem from="1709639137215" duration="16800000" />
+      <workItem from="1710764844500" duration="691000" />
+      <workItem from="1712315147229" duration="683000" />
+      <workItem from="1713270759114" duration="599000" />
+      <workItem from="1715167111337" duration="15000" />
+      <workItem from="1715171003544" duration="1679000" />
+      <workItem from="1715254543746" duration="83000" />
+      <workItem from="1715267495228" duration="178000" />
+      <workItem from="1715787713101" duration="97000" />
+      <workItem from="1716462846778" duration="1300000" />
+      <workItem from="1718358239944" duration="1378000" />
+      <workItem from="1719311048648" duration="12000" />
+      <workItem from="1719399973070" duration="1280000" />
     </task>
     <task id="LOCAL-00001" summary="Add codebase">
       <option name="closed" value="true" />
@@ -111,7 +125,23 @@
       <option name="project" value="LOCAL" />
       <updated>1709133980476</updated>
     </task>
-    <option name="localTasksCounter" value="5" />
+    <task id="LOCAL-00005" summary="Added TFIDF experiments">
+      <option name="closed" value="true" />
+      <created>1709306456028</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1709306456028</updated>
+    </task>
+    <task id="LOCAL-00006" summary="Added concatenate, only issue summary and avg emb multiple feedback experiments. Also added functionality to get link information from issues in jira">
+      <option name="closed" value="true" />
+      <created>1709657959762</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1709657959762</updated>
+    </task>
+    <option name="localTasksCounter" value="7" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -146,9 +176,14 @@
     <MESSAGE value="Cleaned up main code" />
     <MESSAGE value="Added 4 new Experiments. See bertMain diff for details" />
     <MESSAGE value="Add jira issues file" />
-    <option name="LAST_COMMIT_MESSAGE" value="Add jira issues file" />
+    <MESSAGE value="Added two more experiments. AvgCosSim and AvgCosSimFewer1Assign" />
+    <MESSAGE value="Added TFIDF experiments" />
+    <MESSAGE value="Added concatenate, only issue summary and avg emb multiple feedback experiments. Also added functionality to get link information from issues in jira" />
+    <option name="LAST_COMMIT_MESSAGE" value="Added concatenate, only issue summary and avg emb multiple feedback experiments. Also added functionality to get link information from issues in jira" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
-    <SUITE FILE_PATH="coverage/FeReRe$bertMain.coverage" NAME="bertMain Coverage Results" MODIFIED="1709219232347" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/FeReRe$bertEmbeddingHandler.coverage" NAME="bertEmbeddingHandler Coverage Results" MODIFIED="1709650023499" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/FeReRe$bertMain.coverage" NAME="bertMain Coverage Results" MODIFIED="1715267499181" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/FeReRe$jiraExtractor.coverage" NAME="jiraExtractor Coverage Results" MODIFIED="1709657776967" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
   </component>
 </project>

@@ -80,7 +80,7 @@ def extractIssuesFromJiraWithLinks(path, filterPrefix=False, filterSoftwareNames
         linked_issues_str = ', '.join(linked_issues)
         summary,description = applyFilters(summary,description,filterPrefix,filterSoftwareNames)
 
-        data.append([key, summary + ": " + description, linked_issues_str])
+        data.append([key, summary, description, linked_issues_str])
 
     # Convert data to pandas DataFrame
     df = pd.DataFrame(data)
@@ -223,5 +223,5 @@ def getLinkHierarchy(path, filterPrefix=False, filterSoftwareNames=None):
     print(f"Excel file has been created at: {excel_path}")
 
 #extractIssuesFromJiraWithLinks("data/", True, ["Komoot", "Garmin", "Google Fit", "Strava"])
-getLinkHierarchy("data/", True, ["Komoot", "Garmin", "Google Fit", "Strava"])
+#getLinkHierarchy("data/", True, ["Komoot", "Garmin", "Google Fit", "Strava"])
 #getUniqueSets('data\jira_issues_linked_namesfiltered_noprefix.xlsx')
