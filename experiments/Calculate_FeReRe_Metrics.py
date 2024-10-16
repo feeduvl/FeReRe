@@ -150,6 +150,3 @@ run_eval('data/finetuneBERT/classified_feedback_requirements.xlsx', 'data/finetu
 
 #Bert combineddata
 #run_eval('data/finetuneBERT/combineddata/classified_feedback_requirements.xlsx', 'data/finetuneBERT/combineddata/test_ground_truth.xlsx')
-
-#SBERT
-#run_eval('data/sbert/classified_feedback_requirements.xlsx', 'data/sbert/test_ground_truth.xlsx')
