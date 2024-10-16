@@ -2,6 +2,7 @@ import pandas as pd
 import numpy as np
 import os
 import glob
+import mlflow
 
 class PrecisionRecallEvaluator:
     def __init__(self, ground_truth_path, excel_files_path, output_path, chosen_feedback, removeNoRel):
@@ -37,10 +38,10 @@ class PrecisionRecallEvaluator:
                 # Calculate average metrics
                 avg_precision = results['Precision'].mean()
                 avg_recall = results['Recall'].mean()
-                avg_f1_score = results['F1-Score'].mean()
+                avg_f2_score = results['F2-Score'].mean()
 
                 # Append average metrics to the results DataFrame
-                results.loc['Average'] = [avg_precision, avg_recall, avg_f1_score]
+                results.loc['Average'] = [avg_precision, avg_recall, avg_f2_score]
 
                 # Append the average number of predicted assignments
                 results.loc['Avg. Assign'] = [avg_predicted_assignments, np.nan, np.nan]
@@ -57,16 +58,16 @@ class PrecisionRecallEvaluator:
         all_results.to_excel(self.output_path+'.xlsx')
 
     def evaluate_file(self, df):
-        precision_list, recall_list, f1_list = [], [], []
+        precision_list, recall_list, f2_list = [], [], []
         total_predicted_assignments = 0
 
         for issue_id in df.columns:
             true_feedback_ids = self.ground_truth.get(issue_id, set())
             predicted_feedback_ids = set(df[df[issue_id].notna()].index.astype(str))
-            if self.removeNoRel == True and len(true_feedback_ids)<1:
+            if self.removeNoRel == True and len(true_feedback_ids) < 1:
                 precision_list.append(np.NaN)
                 recall_list.append(np.NaN)
-                f1_list.append(np.NaN)
+                f2_list.append(np.NaN)
                 continue
             if self.chosen_feedback != None and issue_id in self.chosen_feedback:
                 for feedback in self.chosen_feedback[issue_id]:
@@ -79,22 +80,32 @@ class PrecisionRecallEvaluator:
 
             precision = true_positives / (true_positives + false_positives) if true_positives + false_positives > 0 else 0
             recall = true_positives / (true_positives + false_negatives) if true_positives + false_negatives > 0 else 0
-            f1_score = 2 * precision * recall / (precision + recall) if precision + recall > 0 else 0
+            f2_score = 5 * precision * recall / (4 * precision + recall) if precision + recall > 0 else 0
 
             precision_list.append(precision)
             recall_list.append(recall)
-            f1_list.append(f1_score)
+            f2_list.append(f2_score)
+
         avg_predicted_assignments = total_predicted_assignments / len(df.columns) if df.columns.size > 0 else 0
 
         # Include the issue IDs as the index for the DataFrame
         results_df = pd.DataFrame({
             'Precision': precision_list,
             'Recall': recall_list,
-            'F1-Score': f1_list
+            'F2-Score': f2_list
         }, index=df.columns)
 
+        # Calculate and log average metrics
+        avg_precision = np.mean(precision_list)
+        avg_recall = np.mean(recall_list)
+        avg_f2_score = np.mean(f2_list)
+
+        mlflow.log_metric('avg_precision', avg_precision)
+        mlflow.log_metric('avg_recall', avg_recall)
+        mlflow.log_metric('avg_f2_score', avg_f2_score)
+
         # Add averages at the end
-        results_df.loc['Average'] = [np.mean(precision_list), np.mean(recall_list), np.mean(f1_list)]
+        results_df.loc['Average'] = [avg_precision, avg_recall, avg_f2_score]
 
         return results_df, avg_predicted_assignments
 

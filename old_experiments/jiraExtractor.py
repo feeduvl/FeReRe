@@ -3,10 +3,10 @@ from jira import JIRA
 import pandas as pd
 import re
 
-def extractIssuesFromJira(path, filterPrefix=False, filterSoftwareNames=None):
+def extractIssuesFromJira(path, filterPrefix=False, filterSoftwareNames=None, project="KOMOOT"):
     print("Extracting Jira Issues")
     # Jira server setup
-    jira_url = "https://jira-se.ifi.uni-heidelberg.de"
+    jira_url = "INSERT URL"
     username = input("Username: ")
     password = input("Password: ")
 
@@ -14,7 +14,7 @@ def extractIssuesFromJira(path, filterPrefix=False, filterSoftwareNames=None):
     jira = JIRA(jira_url, basic_auth=(username, password))
 
     # Define the JQL query to fetch issues of specific types from the project
-    jql_query = 'project = KOMOOT AND issuetype in ("System Function", "Workspace", "User Subtask")'
+    jql_query = f'project = {project} AND issuetype in ("System Function", "Workspace", "User Subtask")'
 
     # Fetch issues using JQL
     issues = jira.search_issues(jql_query, maxResults=False)
@@ -27,7 +27,8 @@ def extractIssuesFromJira(path, filterPrefix=False, filterSoftwareNames=None):
         description = issue.fields.description
 
         summary,description = applyFilters(summary,description,filterPrefix,filterSoftwareNames)
-
+        print(summary)
+        print(description)
         data.append([key, summary + ": " + description])
 
     # Convert data to pandas DataFrame
@@ -35,7 +36,7 @@ def extractIssuesFromJira(path, filterPrefix=False, filterSoftwareNames=None):
 
     # Write DataFrame to Excel file
     if filterPrefix:
-        excel_path = path+'jira_issues_noprefix.xlsx'
+        excel_path = path+'jira_issues_noprefix_old.xlsx'
         if filterSoftwareNames != None:
             excel_path = path+'jira_issues_namesfiltered_noprefix.xlsx'
     else:
@@ -46,7 +47,7 @@ def extractIssuesFromJira(path, filterPrefix=False, filterSoftwareNames=None):
 
     print(f"Excel file has been created at: {excel_path}")
 
-def extractIssuesFromJiraWithLinks(path, filterPrefix=False, filterSoftwareNames=None):
+def extractIssuesFromJiraWithLinks(path, filterPrefix=False, filterSoftwareNames=None, project="KOMOOT"):
     print("Extracting Jira Issues")
     # Jira server setup
     jira_url = "https://jira-se.ifi.uni-heidelberg.de"
@@ -57,7 +58,7 @@ def extractIssuesFromJiraWithLinks(path, filterPrefix=False, filterSoftwareNames
     jira = JIRA(jira_url, basic_auth=(username, password))
 
     # Define the JQL query to fetch issues of specific types from the project
-    jql_query = 'project = KOMOOT AND issuetype in ("System Function", "Workspace", "User Subtask")'
+    jql_query = f'project = {project} AND issuetype in ("System Function", "Workspace", "User Subtask")'
 
     # Fetch issues using JQL
     issues = jira.search_issues(jql_query, maxResults=False, fields="summary,description,issuelinks")
@@ -222,6 +223,6 @@ def getLinkHierarchy(path, filterPrefix=False, filterSoftwareNames=None):
 
     print(f"Excel file has been created at: {excel_path}")
 
-#extractIssuesFromJiraWithLinks("data/", True, ["Komoot", "Garmin", "Google Fit", "Strava"])
+extractIssuesFromJira("../data/sbert/", True, project="KOMOOTOLD")
 #getLinkHierarchy("data/", True, ["Komoot", "Garmin", "Google Fit", "Strava"])
 #getUniqueSets('data\jira_issues_linked_namesfiltered_noprefix.xlsx')

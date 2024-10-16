@@ -38,7 +38,6 @@ def main():
 
     # Load the Excel file without assuming the first row as a header
     df = pd.read_excel(file_path, header=None)
-
     # Use the second column for generating embeddings
     embeddings_list = fetch_embeddings(df.iloc[:, 1].astype(str).tolist())
 

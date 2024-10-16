@@ -1,6 +1,5 @@
 import pandas as pd
 import spacy
-from sklearn.decomposition import PCA
 from transformers import DistilBertTokenizer, DistilBertModel
 import torch
 import numpy as np
@@ -100,6 +99,7 @@ def create_embeddings(file_path, output_path):
     # Process each row in the Excel file
     for index, row in df.iterrows():
         text = row[1]  # Assuming the text is in the second column
+        print(text)
         filtered_embeddings = get_filtered_embeddings(text)
         embeddings_list.append(filtered_embeddings)
     # Create a new DataFrame with the original first column and filtered embeddings

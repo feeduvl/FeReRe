@@ -1,27 +1,27 @@
-from jiraExtractor import extractIssuesFromJira, extractIssuesFromJiraWithLinks
+from old_experiments.jiraExtractor import extractIssuesFromJira
 from bertEmbeddingHandler import create_embeddings, create_combined_embeddings, create_average_embeddings, \
     create_TFIDFweightedaverage_embeddings, create_TFIDF_embeddings, create_concatenated_embeddings
 import CosSimCalculator
-from thresholdFilter import treshold_filter
-from Evaluator import evaluate
+from old_experiments.thresholdFilter import treshold_filter
+from old_experiments.Evaluator import evaluate
 
 
 def runEvalBertNoPrefix():
     # Jira Issue Prefixes are removed from requirements
-    extractIssuesFromJira("data/", True)
-    create_embeddings('data/jira_issues_noprefix.xlsx', 'data/bert/issues_bert_embeddings.xlsx')
-    create_embeddings('data/feedback.xlsx', 'data/bert/feedback_bert_embeddings.xlsx')
-    CosSimCalculator.calc_cos_sim('data/bert/issues_bert_embeddings.xlsx', 'data/bert/feedback_bert_embeddings.xlsx')
-    treshold_filter("data/bert/bert_similarity_scores.xlsx", "data/bert/thresholds")
-    evaluate('data/Ground_Truth.xlsx', "data/bert/thresholds", "data/bert/Eval_Bert_NoPrefix")
+    #extractIssuesFromJira("data/", True)
+    #create_embeddings('data/jira_issues_noprefix.xlsx', 'data/bert/issues_bert_embeddings.xlsx')
+    #create_embeddings('data/feedback.xlsx', 'data/bert/feedback_bert_embeddings.xlsx')
+    #CosSimCalculator.calc_cos_sim('data/bert/issues_bert_embeddings.xlsx', 'data/bert/feedback_bert_embeddings.xlsx')
+    #treshold_filter("data/bert/bert_similarity_scores.xlsx", "data/bert/thresholds")
+    #evaluate('data/Ground_Truth.xlsx', "data/bert/thresholds", "data/bert/Eval_Bert_NoPrefix")
 
 def runEvalBertNoPrefixNoNames():
     # Jira Issue Prefixes and Software specific Names such as "Komoot" are removed from requirements
-    extractIssuesFromJira("data/", True, ["Komoot", "Garmin", "Google Fit", "Strava"])
-    create_embeddings('data/jira_issues_namesfiltered_noprefix.xlsx', 'data/bert/issues_bert_embeddings.xlsx')
-    create_embeddings('data/feedback_nonames.xlsx', 'data/bert/feedback_bert_embeddings.xlsx')
-    CosSimCalculator.calc_cos_sim('data/bert/issues_bert_embeddings.xlsx', 'data/bert/feedback_bert_embeddings.xlsx')
-    treshold_filter("data/bert/bert_similarity_scores.xlsx", "data/bert/thresholds")
+    extractIssuesFromJira("../data/", True, ["Komoot", "Garmin", "Google Fit", "Strava"])
+    create_embeddings('data/jira_issues_namesfiltered_noprefix.xlsx', '../data/bert/issues_bert_embeddings.xlsx')
+    create_embeddings('data/feedback_nonames.xlsx', '../data/bert/feedback_bert_embeddings.xlsx')
+    CosSimCalculator.calc_cos_sim('../data/bert/issues_bert_embeddings.xlsx', 'data/bert/feedback_bert_embeddings.xlsx')
+    treshold_filter("../data/bert/bert_similarity_scores.xlsx", "data/bert/thresholds")
     evaluate('data/Ground_Truth.xlsx', "data/bert/thresholds", "data/bert/Eval_Bert_NoPrefix_NoNames")
 
 def runEvalBertNoPrefixNoNamesFewer1Assign():
@@ -29,41 +29,45 @@ def runEvalBertNoPrefixNoNamesFewer1Assign():
     #extractIssuesFromJira("data/", True, ["Komoot", "Garmin", "Google Fit", "Strava"])
     #create_embeddings('data/jira_issues_namesfiltered_noprefix.xlsx', 'data/bert/issues_bert_embeddings.xlsx')
     #create_embeddings('data/feedback_nonames.xlsx', 'data/bert/feedback_bert_embeddings.xlsx')
-    CosSimCalculator.calc_cos_sim('data/bert/issues_bert_embeddings.xlsx', 'data/bert/feedback_bert_embeddings.xlsx')
-    treshold_filter("data/bert/bert_similarity_scores.xlsx", "data/bert/thresholds")
+    CosSimCalculator.calc_cos_sim('../data/bert/issues_bert_embeddings.xlsx', 'data/bert/feedback_bert_embeddings.xlsx')
+    treshold_filter("../data/bert/bert_similarity_scores.xlsx", "data/bert/thresholds")
     evaluate('data/Ground_Truth.xlsx', "data/bert/thresholds", "data/bert/Eval_Bert_NoPrefix_NoNames_Fewer1Assign",removeNoRel=True)
 
 def runEvalBertNoPrefixNoNamesTFIDFFewer1Assign():
     # Word Embeddings are weighted by the TFIDF scores of the individual words in the feedback and requirements
     #extractIssuesFromJira("data/", True, ["Komoot", "Garmin", "Google Fit", "Strava"])
-    create_TFIDF_embeddings('data/jira_issues_namesfiltered_noprefix.xlsx','data/feedback_nonames.xlsx', 'data/bert/issues_bert_embeddings.xlsx')
-    create_TFIDF_embeddings('data/feedback_nonames.xlsx','data/jira_issues_namesfiltered_noprefix.xlsx', 'data/bert/feedback_bert_embeddings.xlsx')
-    CosSimCalculator.calc_cos_sim('data/bert/issues_bert_embeddings.xlsx', 'data/bert/feedback_bert_embeddings.xlsx')
-    treshold_filter("data/bert/bert_similarity_scores.xlsx", "data/bert/thresholds")
+    create_TFIDF_embeddings('data/jira_issues_namesfiltered_noprefix.xlsx','data/feedback_nonames.xlsx',
+                            '../data/bert/issues_bert_embeddings.xlsx')
+    create_TFIDF_embeddings('data/feedback_nonames.xlsx','data/jira_issues_namesfiltered_noprefix.xlsx',
+                            '../data/bert/feedback_bert_embeddings.xlsx')
+    CosSimCalculator.calc_cos_sim('../data/bert/issues_bert_embeddings.xlsx', 'data/bert/feedback_bert_embeddings.xlsx')
+    treshold_filter("../data/bert/bert_similarity_scores.xlsx", "data/bert/thresholds")
     evaluate('data/Ground_Truth.xlsx', "data/bert/thresholds", "data/bert/Eval_Bert_NoPrefix_NoNames_TFIDF_Fewer1Assign",removeNoRel=True)
 
 def runEvalBertNoPrefixNoNamesAvgCosSim():
     # Treats one feedback per issue from Ground Truth as already assigned and calculates an average similarity score
     # of CosSim(Issue,NewFeedback) and CosSim(AssignedFeedback,Newfeedback)
-    extractIssuesFromJira("data/", True, ["Komoot", "Garmin", "Google Fit", "Strava"])
-    create_embeddings('data/jira_issues_namesfiltered_noprefix.xlsx', 'data/bert/issues_bert_embeddings.xlsx')
-    create_embeddings('data/feedback_nonames.xlsx', 'data/bert/feedback_bert_embeddings.xlsx')
+    extractIssuesFromJira("../data/", True, ["Komoot", "Garmin", "Google Fit", "Strava"])
+    create_embeddings('data/jira_issues_namesfiltered_noprefix.xlsx', '../data/bert/issues_bert_embeddings.xlsx')
+    create_embeddings('data/feedback_nonames.xlsx', '../data/bert/feedback_bert_embeddings.xlsx')
     # Got to run at least from here to get chosen_feedback:
-    chosen_feedback = CosSimCalculator.calc_cos_sim_incl_one_feedback_avgcossim('data/bert/issues_bert_embeddings.xlsx',
+    chosen_feedback = CosSimCalculator.calc_cos_sim_incl_one_feedback_avgcossim(
+        '../data/bert/issues_bert_embeddings.xlsx',
                                                                                 'data/bert/feedback_bert_embeddings.xlsx')
-    treshold_filter("data/bert/bert_similarity_scores.xlsx", "data/bert/thresholds")
+    treshold_filter("../data/bert/bert_similarity_scores.xlsx", "data/bert/thresholds")
     evaluate('data/Ground_Truth.xlsx', "data/bert/thresholds", "data/bert/Eval_Bert_AvgCosSim", chosen_feedback)
 
 def runEvalBertNoPrefixNoNamesAvgCosSimFewer1Assign():
     # Treats one feedback per issue from Ground Truth as already assigned and calculates an average similarity score
     # of CosSim(Issue,NewFeedback) and CosSim(AssignedFeedback,Newfeedback)
-    extractIssuesFromJira("data/", True, ["Komoot", "Garmin", "Google Fit", "Strava"])
-    create_embeddings('data/jira_issues_namesfiltered_noprefix.xlsx', 'data/bert/issues_bert_embeddings.xlsx')
-    create_embeddings('data/feedback_nonames.xlsx', 'data/bert/feedback_bert_embeddings.xlsx')
+    extractIssuesFromJira("../data/", True, ["Komoot", "Garmin", "Google Fit", "Strava"])
+    create_embeddings('data/jira_issues_namesfiltered_noprefix.xlsx', '../data/bert/issues_bert_embeddings.xlsx')
+    create_embeddings('data/feedback_nonames.xlsx', '../data/bert/feedback_bert_embeddings.xlsx')
     # to run at least from here to get chosen_feedback:
-    chosen_feedback = CosSimCalculator.calc_cos_sim_incl_one_feedback_avgcossim('data/bert/issues_bert_embeddings.xlsx',
+    chosen_feedback = CosSimCalculator.calc_cos_sim_incl_one_feedback_avgcossim(
+        '../data/bert/issues_bert_embeddings.xlsx',
                                                                                 'data/bert/feedback_bert_embeddings.xlsx')
-    treshold_filter("data/bert/bert_similarity_scores.xlsx", "data/bert/thresholds")
+    treshold_filter("../data/bert/bert_similarity_scores.xlsx", "data/bert/thresholds")
     evaluate('data/Ground_Truth.xlsx', "data/bert/thresholds", "data/bert/Eval_Bert_AvgCosSimFewer1Assign",
              chosen_feedback, True)
 
@@ -72,8 +76,9 @@ def runEvalBertNoPrefixNoNamesCombinedEmbeddings():
     # extractIssuesFromJira("data/", True, ["Komoot", "Garmin", "Google Fit", "Strava"])
     chosen_feedback = create_combined_embeddings('data/jira_issues_namesfiltered_noprefix.xlsx', 'data/feedback_nonames.xlsx', 'data/bert/issues_bert_combined_embeddings.xlsx', 'data/Ground_Truth.xlsx')
     # create_embeddings('data/feedback_nonames.xlsx', 'data/bert/feedback_bert_embeddings.xlsx')
-    CosSimCalculator.calc_cos_sim('data/bert/issues_bert_combined_embeddings.xlsx', 'data/bert/feedback_bert_embeddings.xlsx', chosen_feedback)
-    treshold_filter('data/bert/bert_similarity_scores.xlsx', 'data/bert/thresholds')
+    CosSimCalculator.calc_cos_sim('data/bert/issues_bert_combined_embeddings.xlsx',
+                                  '../data/bert/feedback_bert_embeddings.xlsx', chosen_feedback)
+    treshold_filter('../data/bert/bert_similarity_scores.xlsx', 'data/bert/thresholds')
     evaluate('data/Ground_Truth.xlsx', 'data/bert/thresholds', 'data/bert/Eval_Bert_CombinedEmbeddings', chosen_feedback, True)
 
 def runEvalBertNoPrefixNoNamesCombinedEmbeddingsFewer1Assign():
@@ -81,8 +86,9 @@ def runEvalBertNoPrefixNoNamesCombinedEmbeddingsFewer1Assign():
     # extractIssuesFromJira("data/", True, ["Komoot", "Garmin", "Google Fit", "Strava"])
     chosen_feedback = create_combined_embeddings('data/jira_issues_namesfiltered_noprefix.xlsx', 'data/feedback_nonames.xlsx', 'data/bert/issues_bert_combined_embeddings.xlsx', 'data/Ground_Truth.xlsx')
     # create_embeddings('data/feedback_nonames.xlsx', 'data/bert/feedback_bert_embeddings.xlsx')
-    CosSimCalculator.calc_cos_sim('data/bert/issues_bert_combined_embeddings.xlsx', 'data/bert/feedback_bert_embeddings.xlsx', chosen_feedback)
-    treshold_filter('data/bert/bert_similarity_scores.xlsx', 'data/bert/thresholds')
+    CosSimCalculator.calc_cos_sim('data/bert/issues_bert_combined_embeddings.xlsx',
+                                  '../data/bert/feedback_bert_embeddings.xlsx', chosen_feedback)
+    treshold_filter('../data/bert/bert_similarity_scores.xlsx', 'data/bert/thresholds')
     evaluate('data/Ground_Truth.xlsx', 'data/bert/thresholds', 'data/bert/Eval_Bert_CombinedEmbeddingsFewer1Assign', chosen_feedback, True)
 
 def runEvalBertNoPrefixNoNamesHighestSimScore():
@@ -90,17 +96,19 @@ def runEvalBertNoPrefixNoNamesHighestSimScore():
     #extractIssuesFromJira("data/", True, ["Komoot", "Garmin", "Google Fit", "Strava"])
     #create_embeddings('data/jira_issues_namesfiltered_noprefix.xlsx', 'data/bert/issues_bert_embeddings.xlsx')
     #create_embeddings('data/feedback_nonames.xlsx', 'data/bert/feedback_bert_embeddings.xlsx')
-    chosen_feedback=CosSimCalculator.calc_cos_sim_incl_one_feedback_highestscore('data/bert/issues_bert_embeddings.xlsx', 'data/bert/feedback_bert_embeddings.xlsx')
-    treshold_filter( 'data/bert/bert_similarity_scores.xlsx', 'data/bert/thresholds')
+    chosen_feedback= CosSimCalculator.calc_cos_sim_incl_one_feedback_highestscore(
+        '../data/bert/issues_bert_embeddings.xlsx', 'data/bert/feedback_bert_embeddings.xlsx')
+    treshold_filter('../data/bert/bert_similarity_scores.xlsx', 'data/bert/thresholds')
     evaluate('data/Ground_Truth.xlsx', 'data/bert/thresholds', 'data/bert/Eval_Bert_HighestSimScore', chosen_feedback)
 
 def runEvalBertNoPrefixNoNamesHighestSimScoreFewer1Assign():
     # Treat one feedback as already assigned. Calculate sim score of new feedback and issue and new feedback and already assigned feedback and take the higher sim score of the two
     #extractIssuesFromJira("data/", True, ["Komoot", "Garmin", "Google Fit", "Strava"])
-    create_embeddings('data/jira_issues_namesfiltered_noprefix.xlsx', 'data/bert/issues_bert_embeddings.xlsx')
+    create_embeddings('data/jira_issues_namesfiltered_noprefix.xlsx', '../data/bert/issues_bert_embeddings.xlsx')
     #create_embeddings('data/feedback_nonames.xlsx', 'data/bert/feedback_bert_embeddings.xlsx')
-    chosen_feedback=CosSimCalculator.calc_cos_sim_incl_one_feedback_highestscore('data/bert/issues_bert_embeddings.xlsx', 'data/bert/feedback_bert_embeddings.xlsx')
-    treshold_filter( 'data/bert/bert_similarity_scores.xlsx', 'data/bert/thresholds')
+    chosen_feedback= CosSimCalculator.calc_cos_sim_incl_one_feedback_highestscore(
+        '../data/bert/issues_bert_embeddings.xlsx', 'data/bert/feedback_bert_embeddings.xlsx')
+    treshold_filter('../data/bert/bert_similarity_scores.xlsx', 'data/bert/thresholds')
     evaluate('data/Ground_Truth.xlsx', 'data/bert/thresholds', 'data/bert/Eval_Bert_HighestSimScoreFewer1Assign', chosen_feedback, True)
 
 def runEvalBertNoPrefixNoNamesAvgEmbeddings():
@@ -108,8 +116,9 @@ def runEvalBertNoPrefixNoNamesAvgEmbeddings():
     # extractIssuesFromJira("data/", True, ["Komoot", "Garmin", "Google Fit", "Strava"])
     chosen_feedback = create_average_embeddings('data/jira_issues_namesfiltered_noprefix.xlsx', 'data/feedback_nonames.xlsx', 'data/bert/issues_bert_combined_embeddings.xlsx', 'data/Ground_Truth.xlsx')
     # create_embeddings('data/feedback_nonames.xlsx', 'data/bert/feedback_bert_embeddings.xlsx')
-    CosSimCalculator.calc_cos_sim('data/bert/issues_bert_combined_embeddings.xlsx', 'data/bert/feedback_bert_embeddings.xlsx', chosen_feedback)
-    treshold_filter('data/bert/bert_similarity_scores.xlsx', 'data/bert/thresholds')
+    CosSimCalculator.calc_cos_sim('data/bert/issues_bert_combined_embeddings.xlsx',
+                                  '../data/bert/feedback_bert_embeddings.xlsx', chosen_feedback)
+    treshold_filter('../data/bert/bert_similarity_scores.xlsx', 'data/bert/thresholds')
     evaluate('data/Ground_Truth.xlsx', 'data/bert/thresholds', 'data/bert/Eval_Bert_AverageEmbeddings', chosen_feedback)
 
 def runEvalBertNoPrefixNoNamesAvgEmbeddingsFewer1Assign():
@@ -117,17 +126,20 @@ def runEvalBertNoPrefixNoNamesAvgEmbeddingsFewer1Assign():
     # extractIssuesFromJira("data/", True, ["Komoot", "Garmin", "Google Fit", "Strava"])
     chosen_feedback = create_average_embeddings('data/jira_issues_namesfiltered_noprefix.xlsx', 'data/feedback_nonames.xlsx', 'data/bert/issues_bert_combined_embeddings.xlsx', 'data/Ground_Truth.xlsx')
     #create_embeddings('data/feedback_nonames.xlsx', 'data/bert/feedback_bert_embeddings.xlsx')
-    CosSimCalculator.calc_cos_sim('data/bert/issues_bert_combined_embeddings.xlsx', 'data/bert/feedback_bert_embeddings.xlsx', chosen_feedback)
-    treshold_filter('data/bert/bert_similarity_scores.xlsx', 'data/bert/thresholds')
+    CosSimCalculator.calc_cos_sim('data/bert/issues_bert_combined_embeddings.xlsx',
+                                  '../data/bert/feedback_bert_embeddings.xlsx', chosen_feedback)
+    treshold_filter('../data/bert/bert_similarity_scores.xlsx', 'data/bert/thresholds')
     evaluate('data/Ground_Truth.xlsx', 'data/bert/thresholds', 'data/bert/Eval_Bert_AverageEmbeddingsFewer1Assign', chosen_feedback, True)
 
 def runEvalBertNoPrefixNoNamesTFIDFAvgEmbeddingsFewer1Assign():
     # Calculate average of issue and feedback embedding and calculate cos sim for new feedback with average including TFIDF weights
     # extractIssuesFromJira("data/", True, ["Komoot", "Garmin", "Google Fit", "Strava"])
     chosen_feedback = create_TFIDFweightedaverage_embeddings('data/jira_issues_namesfiltered_noprefix.xlsx', 'data/feedback_nonames.xlsx', 'data/bert/issues_bert_combined_embeddings.xlsx', 'data/Ground_Truth.xlsx')
-    create_TFIDF_embeddings('data/feedback_nonames.xlsx','data/jira_issues_namesfiltered_noprefix.xlsx', 'data/bert/feedback_bert_embeddings.xlsx')
-    CosSimCalculator.calc_cos_sim('data/bert/issues_bert_combined_embeddings.xlsx', 'data/bert/feedback_bert_embeddings.xlsx', chosen_feedback)
-    treshold_filter('data/bert/bert_similarity_scores.xlsx', 'data/bert/thresholds')
+    create_TFIDF_embeddings('data/feedback_nonames.xlsx','data/jira_issues_namesfiltered_noprefix.xlsx',
+                            '../data/bert/feedback_bert_embeddings.xlsx')
+    CosSimCalculator.calc_cos_sim('data/bert/issues_bert_combined_embeddings.xlsx',
+                                  '../data/bert/feedback_bert_embeddings.xlsx', chosen_feedback)
+    treshold_filter('../data/bert/bert_similarity_scores.xlsx', 'data/bert/thresholds')
     evaluate('data/Ground_Truth.xlsx', 'data/bert/thresholds', 'data/bert/Eval_Bert_TFIDFAverageEmbeddingsFewer1Assign', chosen_feedback, True)
 
 def runEvalBertNoPrefixNoNamesAvgEmbeddingsMultipleFeedbackFewer1Assign():
@@ -135,8 +147,9 @@ def runEvalBertNoPrefixNoNamesAvgEmbeddingsMultipleFeedbackFewer1Assign():
     # extractIssuesFromJira("data/", True, ["Komoot", "Garmin", "Google Fit", "Strava"])
     chosen_feedback = create_average_embeddings('data/jira_issues_namesfiltered_noprefix.xlsx', 'data/feedback_nonames.xlsx', 'data/bert/issues_bert_combined_embeddings.xlsx', 'data/Ground_Truth.xlsx', 2)
     # create_embeddings('data/feedback_nonames.xlsx', 'data/bert/feedback_bert_embeddings.xlsx')
-    CosSimCalculator.calc_cos_sim('data/bert/issues_bert_combined_embeddings.xlsx', 'data/bert/feedback_bert_embeddings.xlsx', chosen_feedback)
-    treshold_filter('data/bert/bert_similarity_scores.xlsx', 'data/bert/thresholds')
+    CosSimCalculator.calc_cos_sim('data/bert/issues_bert_combined_embeddings.xlsx',
+                                  '../data/bert/feedback_bert_embeddings.xlsx', chosen_feedback)
+    treshold_filter('../data/bert/bert_similarity_scores.xlsx', 'data/bert/thresholds')
     evaluate('data/Ground_Truth.xlsx', 'data/bert/thresholds', 'data/bert/Eval_Bert_AverageEmbeddingsMultiFeedbackFewer1Assign', chosen_feedback, True)
 
 def runEvalBertNoPrefixNoNamesConcatenatedEmbeddingsFewer1Assign():
@@ -144,11 +157,15 @@ def runEvalBertNoPrefixNoNamesConcatenatedEmbeddingsFewer1Assign():
     # extractIssuesFromJira("data/", True, ["Komoot", "Garmin", "Google Fit", "Strava"])
     chosen_feedback = create_concatenated_embeddings('data/jira_issues_namesfiltered_noprefix.xlsx', 'data/feedback_nonames.xlsx', 'data/bert/issues_bert_combined_embeddings.xlsx', 'data/Ground_Truth.xlsx')
     #create_embeddings('data/feedback_nonames.xlsx', 'data/bert/feedback_bert_embeddings.xlsx')
-    CosSimCalculator.calc_cos_sim('data/bert/issues_bert_combined_embeddings.xlsx', 'data/bert/feedback_bert_embeddings.xlsx', chosen_feedback)
-    treshold_filter('data/bert/bert_similarity_scores.xlsx', 'data/bert/thresholds')
+    CosSimCalculator.calc_cos_sim('data/bert/issues_bert_combined_embeddings.xlsx',
+                                  '../data/bert/feedback_bert_embeddings.xlsx', chosen_feedback)
+    treshold_filter('../data/bert/bert_similarity_scores.xlsx', 'data/bert/thresholds')
     evaluate('data/Ground_Truth.xlsx', 'data/bert/thresholds', 'data/bert/Eval_Bert_ConcatenatedEmbeddingsFewer1Assign', chosen_feedback, True)
 
-# runEvalBertNoPrefix()
+runEvalBertNoPrefix()
+
+
+#Old Results with old data
 # runEvalBertNoPrefixNoNames()
 # Results: P 0.29 R 0.43 F1 0.29 Avg: 13 at 0.85
 # Results: P 0.06 R 0.85 F1 0.09 Avg: 164 at 0.42 Only Issue Summary
