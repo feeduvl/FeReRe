@@ -34,7 +34,7 @@ Contains all Python files for training and evaluation of the bert classifier.
    
 Please note that the metrics output by the above files are not the results of FeReRe but merely the metrics for the similarity classification of individual sentences. To evaluate FeReRe use *calculate_FeReRe_Metrics.py*.
 
-This file compares the Feedback Requirements Relation of the classifier to the Ground Truth and calculates the true Precision, Recall and F1 by comparing the Excel-files created after training. Results are printed and can optionally be tracked with an MLFlow setup using the following command in the Repository root directory:
+This file compares the Feedback Requirements Relation of the classifier to the Ground Truth and calculates the true Precision, Recall and F2 by comparing the Excel-files created after training. Results are printed and can optionally be tracked with an MLFlow setup using the following command in the Repository root directory:
 ```
 mlflow ui --backend-store-uri file:mlruns
 ```
