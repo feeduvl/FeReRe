@@ -131,22 +131,22 @@ def run_multiple_evals(names, classifier_files, ground_truth_files):
     mlflow.end_run()
 
 #BERT
-run_eval('data/finetuneBERT/classified_feedback_requirements.xlsx', 'data/finetuneBERT/test_ground_truth.xlsx')
+#run_eval('../data/finetuneBERT/classified_feedback_requirements.xlsx', '../data/finetuneBERT/test_ground_truth.xlsx')
 
 #Bert kfold
-#classifier_files = ["data/finetuneBERT/kfold/classified_feedback_requirements_1.xlsx", "data/finetuneBERT/kfold/classified_feedback_requirements_2.xlsx", "data/finetuneBERT/kfold/classified_feedback_requirements_3.xlsx", "data/finetuneBERT/kfold/classified_feedback_requirements_4.xlsx", "data/finetuneBERT/kfold/classified_feedback_requirements_5.xlsx"]
-#ground_truth_files = ["data/finetuneBERT/kfold/test_ground_truth_1.xlsx", "data/finetuneBERT/kfold/test_ground_truth_2.xlsx", "data/finetuneBERT/kfold/test_ground_truth_3.xlsx", "data/finetuneBERT/kfold/test_ground_truth_4.xlsx", "data/finetuneBERT/kfold/test_ground_truth_5.xlsx"]
+#classifier_files = ["../data/finetuneBERT/kfold/classified_feedback_requirements_1.xlsx", "../data/finetuneBERT/kfold/classified_feedback_requirements_2.xlsx", "../data/finetuneBERT/kfold/classified_feedback_requirements_3.xlsx", "../data/finetuneBERT/kfold/classified_feedback_requirements_4.xlsx", "../data/finetuneBERT/kfold/classified_feedback_requirements_5.xlsx"]
+#ground_truth_files = ["../data/finetuneBERT/kfold/test_ground_truth_1.xlsx", "../data/finetuneBERT/kfold/test_ground_truth_2.xlsx", "../data/finetuneBERT/kfold/test_ground_truth_3.xlsx", "../data/finetuneBERT/kfold/test_ground_truth_4.xlsx", "../data/finetuneBERT/kfold/test_ground_truth_5.xlsx"]
 #names=["1", "2", "3", "4", "5"]
 #run_multiple_evals(names, classifier_files, ground_truth_files)
 
 #Bert multidata
-#classifier_files = ["data/finetuneBERT/multidata/classified_feedback_requirements_0.xlsx", "data/finetuneBERT/multidata/classified_feedback_requirements_1.xlsx", "data/finetuneBERT/multidata/classified_feedback_requirements_2.xlsx"]
-#ground_truth_files = ["data/finetuneBERT/multidata/test_ground_truth_0.xlsx", "data/finetuneBERT/multidata/test_ground_truth_1.xlsx", "data/finetuneBERT/multidata/test_ground_truth_2.xlsx"]
+#classifier_files = ["../data/finetuneBERT/multidata/classified_feedback_requirements_0.xlsx", "../data/finetuneBERT/multidata/classified_feedback_requirements_1.xlsx", "../data/finetuneBERT/multidata/classified_feedback_requirements_2.xlsx"]
+#ground_truth_files = ["../data/finetuneBERT/multidata/test_ground_truth_0.xlsx", "../data/finetuneBERT/multidata/test_ground_truth_1.xlsx", "../data/finetuneBERT/multidata/test_ground_truth_2.xlsx"]
 #names=["Komoot", "SV", "SF"]
 #run_multiple_evals(names, classifier_files, ground_truth_files)
 
 #Bert splittesttrain
-#run_eval('data/finetuneBERT/splittesttrain/classified_feedback_requirements_0.xlsx', 'data/finetuneBERT/splittesttrain/test_ground_truth_0.xlsx')
+#run_eval('../data/finetuneBERT/splittesttrain/classified_feedback_requirements_0.xlsx', '../data/finetuneBERT/splittesttrain/test_ground_truth_0.xlsx')
 
 #Bert combineddata
-#run_eval('data/finetuneBERT/combineddata/classified_feedback_requirements.xlsx', 'data/finetuneBERT/combineddata/test_ground_truth.xlsx')
+run_eval('../data/finetuneBERT/combineddata/classified_feedback_requirements.xlsx', '../data/finetuneBERT/combineddata/test_ground_truth.xlsx')

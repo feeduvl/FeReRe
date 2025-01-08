@@ -9,7 +9,11 @@ import nltk
 import random
 
 def train_and_eval(feedback, requirements, ground_truth, epochs=1):
+
+    import os
+    print(os.environ)
     nltk.download('punkt')
+    nltk.download('punkt_tab')
     # Ensure TensorFlow uses GPU
     print(f"Num GPUs Available: {len(tf.config.list_physical_devices('GPU'))}")
 
@@ -112,6 +116,9 @@ def train_and_eval(feedback, requirements, ground_truth, epochs=1):
         validation_split=0.2
     )
 
+    # Save model
+    model.save('../data/finetuneBERT/saved/trained_model')
+
     # Evaluate model
     prediction= model.predict([X_test_ids, X_test_mask])
     pd.DataFrame(prediction).to_excel('../data/finetuneBERT/predictions.xlsx', index=False)
@@ -194,6 +201,6 @@ def train_and_eval(feedback, requirements, ground_truth, epochs=1):
 
 #train_and_eval("../data/smartage/SmartAgeSV_Feedback.xlsx", "../data/smartage/SV_issues.xlsx", "../data/smartage/SmartAgeSV_GT_formatted.xlsx", 3)
 #train_and_eval("../data/smartage/SmartAgeSF_Feedback.xlsx", "../data/smartage/SF_issues.xlsx", "../data/smartage/SmartAgeSF_GT_formatted.xlsx", 3)
-train_and_eval("../data/komoot/AppReviews.xlsx","../data/komoot/jira_issues_noprefix.xlsx","../data/komoot/Komoot_Ground_Truth_ids_only.xlsx", 1)
+#train_and_eval("../data/komoot/AppReviews.xlsx","../data/komoot/jira_issues_noprefix.xlsx","../data/komoot/Komoot_Ground_Truth_ids_only.xlsx", 1)
 
-#train_and_eval("../data/ReFeed/feedback.xlsx", "../data/ReFeed/requirements.xlsx", "../data/ReFeed/refeed_gt.xlsx", 5)
+train_and_eval("../data/ReFeed/feedback.xlsx", "../data/ReFeed/requirements.xlsx", "../data/ReFeed/refeed_gt.xlsx", 5)

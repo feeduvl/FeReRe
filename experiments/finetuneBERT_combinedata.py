@@ -127,6 +127,9 @@ def train_and_eval(feedback_files, requirements_files, ground_truth_files, epoch
         validation_split=0.2
     )
 
+    # Save model
+    model.save('../data/finetuneBERT/combineddata/trained_model')
+
     # Evaluate model
     prediction= model.predict([X_test_ids, X_test_mask])
     pd.DataFrame(prediction).to_excel('../data/finetuneBERT/combineddata/predictions.xlsx', index=False)
