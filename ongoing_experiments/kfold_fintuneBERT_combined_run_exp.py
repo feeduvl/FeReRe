@@ -35,68 +35,73 @@ from pathlib import Path
 # incorporate_previously_assigned_feedback_kfold Function
 # -------------------------------
 def incorporate_previously_assigned_feedback_kfold(
-    feedback_file, 
-    requirements_file, 
-    gt_file, 
+    feedback_files, 
+    requirements_files, 
+    ground_truth_files, 
     previously_assigned_file
 ):
     """
-    Merges wide-format ground truth with previously assigned feedback IDs.
-    The top row of each file contains requirement IDs; subsequent rows contain feedback IDs.
+    Merges wide-format ground truth (from ground_truth_files) with previously assigned
+    feedback (wide-format) from 'previously_assigned_file'.
     
-    For each requirement, one randomly chosen previously assigned feedback (if available)
-    is incorporated into the ground truth.
-    
-    The function saves the merged (expanded) ground truth to a new Excel file and returns:
-       (feedback_file, requirements_file, path_to_merged_gt_file)
+    For each requirement in 'previously_assigned_file', picks ONE random piece of feedback
+    (if available) and adds it to the ground truth. Returns the new ground truth path.
     """
-    print("[K-FOLD] Reading ground truth (wide format):", gt_file)
-    gt_df = pd.read_excel(gt_file, header=None)
-    print("[K-FOLD] Reading previously assigned feedback (wide format):", previously_assigned_file)
+    # 1) Combine your ground-truth files (axis=1) into one wide DataFrame
+    gt_df_list = []
+    for g in ground_truth_files:
+        gdf = pd.read_excel(g, header=None)
+        gt_df_list.append(gdf)
+    # Concatenate “wide” along columns
+    merged_gt_df = pd.concat(gt_df_list, axis=1, ignore_index=True)
+
+    # 2) Read previously assigned feedback
     prev_df = pd.read_excel(previously_assigned_file, header=None)
 
-    # The top row contains requirement IDs.
-    gt_req_ids = gt_df.iloc[0].dropna().tolist()
-    prev_req_ids = prev_df.iloc[0].dropna().tolist()
-
-    # Convert each wide DataFrame to a dictionary: { req_id : set(feedback_ids) }
+    # Build dictionary from ground truth: { req_id : set(feedback_ids) }
     gt_dict = {}
-    for col_idx, req_id in enumerate(gt_req_ids):
-        feedback_list = gt_df.iloc[1:, col_idx].dropna().tolist()
-        gt_dict[req_id] = set(feedback_list)
+    for col_idx in range(merged_gt_df.shape[1]):
+        req_id = merged_gt_df.iloc[0, col_idx]
+        if pd.isna(req_id):
+            continue
+        fb_set = set(merged_gt_df.iloc[1:, col_idx].dropna().tolist())
+        gt_dict[req_id] = fb_set
 
+    # Build dictionary from previously assigned: { req_id : set(feedback_ids) }
     prev_dict = {}
-    for col_idx, req_id in enumerate(prev_req_ids):
-        feedback_list = prev_df.iloc[1:, col_idx].dropna().tolist()
-        prev_dict[req_id] = set(feedback_list)
+    for col_idx in range(prev_df.shape[1]):
+        req_id = prev_df.iloc[0, col_idx]
+        if pd.isna(req_id):
+            continue
+        fb_set = set(prev_df.iloc[1:, col_idx].dropna().tolist())
+        prev_dict[req_id] = fb_set
 
-    # For each requirement in prev_dict, if there is at least one feedback, add one randomly chosen feedback into gt_dict.
-    for req_id in prev_dict:
-        if len(prev_dict[req_id]) > 0:
-            one_random_fb = random.choice(list(prev_dict[req_id]))
-            if req_id not in gt_dict:
-                gt_dict[req_id] = set()
-            gt_dict[req_id].add(one_random_fb)
+    # 3) For each req_id in prev_dict, pick exactly ONE random feedback from assigned_fb_set
+    for req_id, assigned_fb_set in prev_dict.items():
+        if req_id not in gt_dict:
+            gt_dict[req_id] = set()
+        if assigned_fb_set:  # not empty
+            one_fb = random.choice(list(assigned_fb_set))
+            gt_dict[req_id].add(one_fb)
 
-    # Rebuild a wide DataFrame from the updated gt_dict
+    # 4) Convert back to wide format
     all_req_ids = list(gt_dict.keys())
-    max_fb_count = max(len(fb_set) for fb_set in gt_dict.values()) if gt_dict else 0
-    merged_df = pd.DataFrame(index=range(max_fb_count + 1), columns=range(len(all_req_ids)))
-    for col_idx, req_id in enumerate(all_req_ids):
-        merged_df.iat[0, col_idx] = req_id
-    for col_idx, req_id in enumerate(all_req_ids):
-        fb_list = list(gt_dict[req_id])
-        for row_idx, fb_id in enumerate(fb_list, start=1):
-            merged_df.iat[row_idx, col_idx] = fb_id
+    max_count = max(len(gt_dict[r]) for r in gt_dict) if gt_dict else 0
+    new_gt = pd.DataFrame(index=range(max_count+1), columns=range(len(all_req_ids)))
 
-    # Save the merged ground truth to a new Excel file in a temporary folder.
-    tmp_dir = Path("./ongoing_experiments/temp_experiments_kfold")
-    tmp_dir.mkdir(exist_ok=True)
-    expanded_gt = tmp_dir / "expanded_ground_truth_kfold.xlsx"
-    merged_df.to_excel(expanded_gt, header=False, index=False)
+    for c, rid in enumerate(all_req_ids):
+        new_gt.iat[0, c] = rid
+        fb_list = list(gt_dict[rid])
+        for r, fb_id in enumerate(fb_list, start=1):
+            new_gt.iat[r, c] = fb_id
 
-    print("[K-FOLD] Merged ground truth with previously assigned feedback saved to:", expanded_gt)
-    return feedback_file, requirements_file, str(expanded_gt)
+    # 5) Save to a temp XLSX
+    out_dir = Path("./ongoing_experiments/temp_experiments_kfold")
+    out_dir.mkdir(exist_ok=True)
+    merged_gt_path = out_dir / "expanded_ground_truth_exp14.xlsx"
+    new_gt.to_excel(merged_gt_path, header=False, index=False)
+
+    return feedback_files, requirements_files, str(merged_gt_path)
 
 
 
@@ -150,46 +155,16 @@ experiments = [
 # Optionally, set a common MLflow experiment name for all runs
 mlflow.set_experiment("FeReRe_KFold_Combined_Experiments")
 
-def run_all_experiments():
-    for exp in experiments:
+for exp in experiments:
         print("\n==========================================")
         print(f"Running K-fold Experiment {exp['exp_id']} with parameters:")
         print(f"  remove_sw={exp['remove_sw']} | augment={exp['augment']} | do_split={exp['do_split']}")
         print(f"  epochs={exp['epochs']} | n_splits={exp['n_splits']} | batch_size={exp['batch_size']} | model_name={exp['model_name']}")
         print("==========================================\n")
         
-        if exp["exp_id"] == 14:
-                
-            # For Experiment 14, choose a random fold file from Exp 2's outputs.
-            random_fold = random.randint(1, 5)
-            prev_assigned = f"./kfold_results/classified_feedback_requirements_exp_2_fold_{random_fold}.xlsx"
-            
-            f_path, r_path, g_path = incorporate_previously_assigned_feedback_kfold(
-                feedback_files[0],
-                requirements_files[0],
-                ground_truth_files[0],
-                prev_assigned
-            )
-            # For experiment 14, use the merged ground truth file and best_preprocessing parameters.
-            _ = train_eval_kfold_combined(
-                feedback_files=[f_path],
-                requirements_files=[r_path],
-                ground_truth_files=[g_path],
-                n_splits=exp["n_splits"],
-                epochs=exp["epochs"],
-                batch_size=exp["batch_size"],
-                max_length=256,
-                model_name=exp["model_name"],
-                remove_sw=best_preprocessing["remove_sw"],
-                augment=best_preprocessing["augment"],
-                do_split=best_preprocessing["do_split"],
-                random_state=42,
-                log_dir="./logs_kfold",
-                results_dir="./kfold_results",
-                exp_name="FeReRe_KFold_Combined",
-                exp_id=exp["exp_id"]
-            )
-        else:
+
+        # Normal experiments (1..13, 15)
+        if exp["exp_id"] != 14:
             _ = train_eval_kfold_combined(
                 feedback_files=feedback_files,
                 requirements_files=requirements_files,
@@ -208,8 +183,80 @@ def run_all_experiments():
                 exp_name="FeReRe_KFold_Combined",
                 exp_id=exp["exp_id"]
             )
+        
+        # Special experiment 14
+        else:
+            # We'll accumulate metrics from 5 merges
+            folds_metrics_all = []
 
+            # We will do 5 merges, each time using "classified_feedback_requirements_exp_10_fold_{i}"
+            for i in range(1, 6):
+                previously_assigned_file = (
+                    f"/nfs/home/vthakur_paech/kfold_results/"
+                    f"classified_feedback_requirements_exp_10_fold_{i}.xlsx"
+                )
+
+                # 1) Incorporate that fold's previously assigned feedback
+                fb_files, req_files, merged_gt_path = incorporate_previously_assigned_feedback_kfold(
+                    feedback_files,
+                    requirements_files,
+                    ground_truth_files,
+                    previously_assigned_file
+                )
+
+                # 2) Now run a brand-new 5-fold cross validation with that merged ground truth
+                fold_metrics = train_eval_kfold_combined(
+                    feedback_files=fb_files,
+                    requirements_files=req_files,
+                    ground_truth_files=[merged_gt_path],  # pass only the merged file
+                    n_splits=exp["n_splits"],
+                    epochs=exp["epochs"],
+                    batch_size=exp["batch_size"],
+                    max_length=256,
+                    model_name=exp["model_name"],
+                    remove_sw=exp["remove_sw"],
+                    augment=exp["augment"],
+                    do_split=exp["do_split"],
+                    random_state=42,
+                    log_dir="./logs_kfold",
+                    results_dir="./kfold_results",
+                    exp_name="FeReRe_KFold_Combined",
+                    exp_id=exp["exp_id"]
+                )
+                # fold_metrics is a list of dicts, one per fold in train_eval_kfold_combined
+                #   e.g. [{fold: 1, precision: p1, recall: r1, f2: f21, ...}, ...]
+
+                # 3) Compute average across these 5 folds
+                if len(fold_metrics) > 0:
+                    avg_prec = sum(m["precision"] for m in fold_metrics) / len(fold_metrics)
+                    avg_rec  = sum(m["recall"] for m in fold_metrics) / len(fold_metrics)
+                    avg_f2   = sum(m["f2"] for m in fold_metrics) / len(fold_metrics)
+                    avg_as   = sum(m["avg_assign"] for m in fold_metrics) / len(fold_metrics)
+                    folds_metrics_all.append((avg_prec, avg_rec, avg_f2, avg_as))
+
+            # After the loop, we have 5 sets of average metrics from each “merge + CV run”
+            # Let's average them again so we get final metrics for Exp 14
+            if folds_metrics_all:
+                final_prec = sum(m[0] for m in folds_metrics_all) / len(folds_metrics_all)
+                final_rec  = sum(m[1] for m in folds_metrics_all) / len(folds_metrics_all)
+                final_f2   = sum(m[2] for m in folds_metrics_all) / len(folds_metrics_all)
+                final_as   = sum(m[3] for m in folds_metrics_all) / len(folds_metrics_all)
+                
+                print("\n[EXPERIMENT 14] Final AVERAGE across all 5 merges of previous folds:")
+                print(f"  Precision = {final_prec:.4f}")
+                print(f"  Recall    = {final_rec:.4f}")
+                print(f"  F2        = {final_f2:.4f}")
+                print(f"  AvgAssigned = {final_as:.2f}")
+                
+                # Optionally log in MLflow:
+                mlflow.set_experiment("FeReRe_KFold_Combined_Experiments")
+                with mlflow.start_run(run_name="Experiment_14_FinalAverage"):
+                    mlflow.log_param("exp_id", 14)
+                    mlflow.log_metric("avg_precision", final_prec)
+                    mlflow.log_metric("avg_recall", final_rec)
+                    mlflow.log_metric("avg_f2", final_f2)
+                    mlflow.log_metric("avg_assigned", final_as)
+    
     print("\n[ALL EXPERIMENTS COMPLETED]\n")
-
 if __name__ == "__main__":
     run_all_experiments()
