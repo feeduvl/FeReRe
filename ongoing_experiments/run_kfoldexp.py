@@ -151,7 +151,7 @@ best_preprocessing = {"remove_sw": False, "augment": True, "do_split": False}
 # For experiments 1-7, 8-13, and 15, we use different settings.
 # Experiment 14 uses incorporate_previously_assigned_feedback_kfold.
 experiments = [
-     {"exp_id": 1,  "remove_sw": True,  "augment": False, "do_split": False,"epochs":30, "n_splits": 5, "batch_size": 32, "model_name": "bert-base-uncased"},
+     {"exp_id": 1,  "remove_sw": True,  "augment": False, "do_split": False,"epochs":20, "n_splits": 5, "batch_size": 32, "model_name": "bert-base-uncased"},
      {"exp_id": 2,  "remove_sw": False, "augment": True,  "do_split": False, "epochs": 20, "n_splits": 5, "batch_size": 32, "model_name": "bert-base-uncased"},
      {"exp_id": 3,  "remove_sw": False, "augment": False, "do_split": True,  "epochs": 20, "n_splits": 5, "batch_size": 32, "model_name": "bert-base-uncased"},
      {"exp_id": 4,  "remove_sw": True,  "augment": True,  "do_split": False, "epochs": 20, "n_splits": 5, "batch_size": 32, "model_name": "bert-base-uncased"},
